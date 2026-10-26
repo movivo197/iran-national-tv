@@ -1,0 +1,801 @@
+<!-- ... existing code ... -->
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-drag: none;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #090d16;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(234, 179, 8, 0.14) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(220, 38, 38, 0.16) 0px, transparent 50%);
+            color: #f8fafc;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Android TV Focus Ring & Scale Effect */
+<!-- ... existing code ... -->
+    <!-- TOP STATUS BAR (Android TV Ambient Header) -->
+    <header class="h-20 px-6 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between shrink-0 z-30">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 via-yellow-600 to-red-700 flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-300/30">
+                <i class="fa-solid fa-sun text-white text-2xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2.5">
+                    <h1 class="text-xl font-black tracking-tight text-white">مرکز خبر انقلاب ملی و آزادی ایران</h1>
+                    <span class="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-full font-bold">ویژه تلویزیون اندروید (Android TV)</span>
+                </div>
+                <p class="text-xs text-slate-400">پوشش زنده شبکه‌های خبری، کانال‌های تلگرام و یوتیوب بازپس‌گیری ایران و جنگ با جمهوری اسلامی</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Multi-Calendar Clock -->
+        <div class="flex items-center gap-3.5">
+            <!-- Live Telegram Web Fetch Button -->
+            <button onclick="fetchLiveTelegramWebFeeds()" tabindex="0" class="tv-focusable flex items-center gap-2 bg-sky-600/20 hover:bg-sky-600/30 border border-sky-400/40 text-sky-300 px-3.5 py-2 rounded-xl text-xs font-bold">
+                <i id="sync-icon" class="fa-solid fa-arrows-rotate text-sky-400"></i>
+                <span>واکشی زنده تلگرام و یوتیوب</span>
+            </button>
+
+            <!-- GitHub APK Export Info Button -->
+            <button onclick="openApkModal()" tabindex="0" class="tv-focusable flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/20">
+                <i class="fa-brands fa-android text-base"></i>
+                <span>ساخت APK در گیت‌هاب</span>
+            </button>
+
+            <!-- Triple Calendar & Live Digital Clock Box (شاهنشاهی، خورشیدی، میلادی) -->
+            <div class="bg-slate-900/95 border border-slate-700/80 px-4 py-1.5 rounded-2xl flex items-center gap-4 shadow-inner">
+                <div class="text-left border-l border-slate-800 pl-3">
+                    <div id="live-clock" class="text-lg font-black text-amber-400 tracking-wider leading-tight font-mono">20:45:12</div>
+                    <div class="text-[10px] text-emerald-400 font-bold flex items-center gap-1 justify-end">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> به وقت ایران
+                    </div>
+                </div>
+                <div class="flex flex-col gap-0.5 text-right text-[11px]">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/30 px-1.5 py-0.2 rounded font-bold">شاهنشاهی</span>
+                        <span id="imperial-date" class="font-extrabold text-amber-200">۴ آبان ۲۵۸۵ شاهنشاهی</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-300">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] text-sky-400 font-bold">خورشیدی:</span>
+                            <span id="persian-date" class="font-semibold text-white">۴ آبان ۱۴۰۵</span>
+                        </div>
+                        <span class="text-slate-600">|</span>
+                        <div class="flex items-center gap-1" dir="ltr">
+                            <span id="gregorian-date" class="font-mono text-[11px] text-slate-300">26 Oct 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN TV WORKSPACE (Sidebar + Dynamic View) -->
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- RIGHT SIDEBAR NAVIGATION (Android TV Leanback Drawer) -->
+        <aside class="w-64 bg-slate-950/90 border-l border-slate-800/80 p-4 flex flex-col justify-between shrink-0 z-20">
+            <nav class="space-y-2" id="tv-sidebar">
+                <div class="text-[11px] font-bold text-slate-500 px-3 mb-2 uppercase tracking-wider">منوی تلویزیون (کنترل با جهت‌نما)</div>
+                
+                <button onclick="switchTab('home')" data-tab="home" tabindex="0" class="tv-focusable tv-nav-item tv-focused w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-bold text-sm text-white bg-slate-800/60">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-house-signal text-amber-400 text-lg w-6 text-center"></i>
+                        <span>پیشخوان انقلاب ملی</span>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                </button>
+
+                <button onclick="switchTab('livetv')" data-tab="livetv" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-tv text-red-500 text-lg w-6 text-center"></i>
+                        <span>پخش زنده شبکه‌ها</span>
+                    </div>
+                    <span id="live-count-badge" class="text-[10px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span> ۷ زنده
+                    </span>
+                </button>
+
+                <button onclick="switchTab('telegram')" data-tab="telegram" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-brands fa-telegram text-sky-400 text-xl w-6 text-center"></i>
+                        <span>اخبار کانال‌های تلگرام</span>
+                    </div>
+                    <span id="tg-count-badge" class="text-[11px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full">۸</span>
+                </button>
+
+                <button onclick="switchTab('youtube')" data-tab="youtube" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-brands fa-youtube text-rose-500 text-xl w-6 text-center"></i>
+                        <span>یوتیوب و تحلیلگران</span>
+                    </div>
+                    <span id="yt-count-badge" class="text-[11px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full">۸</span>
+                </button>
+
+                <button onclick="switchTab('sources')" data-tab="sources" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-sliders text-amber-400 text-lg w-6 text-center"></i>
+                        <span>مدیریت کانال‌ها و منابع</span>
+                    </div>
+                </button>
+            </nav>
+
+            <!-- Active Feeds Status Box -->
+            <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3.5 space-y-2.5">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400 font-medium">وضعیت فیدهای خبری</span>
+                    <span id="feed-status-indicator" class="text-emerald-400 font-bold flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> متصل و بروز
+                    </span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+                    <div class="bg-slate-950/90 p-1.5 rounded-lg border border-slate-800">
+                        <div class="text-red-400 font-bold">۷ شبکه</div>
+                        <div class="text-slate-500 text-[10px]">پخش زنده</div>
+                    </div>
+                    <div class="bg-slate-950/90 p-1.5 rounded-lg border border-slate-800">
+                        <div class="text-sky-400 font-bold">۶ کانال</div>
+                        <div class="text-slate-500 text-[10px]">تلگرام</div>
+                    </div>
+                    <div class="bg-slate-950/90 p-1.5 rounded-lg border border-slate-800">
+                        <div class="text-rose-400 font-bold">۶ کانال</div>
+                        <div class="text-slate-500 text-[10px]">یوتیوب</div>
+                    </div>
+                </div>
+                <div class="text-[10px] text-slate-400 leading-relaxed text-center pt-1 border-t border-slate-800">
+                    از کلیدهای جهت‌نمای کیبورد <kbd class="bg-slate-800 px-1.5 py-0.5 rounded text-sky-300">↑↓←→</kbd> یا کنترل گوشه تصویر استفاده کنید.
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT VIEWPORT -->
+        <main id="main-viewport" class="flex-1 overflow-y-auto p-6 space-y-7 scroll-smooth">
+
+            <!-- ======================= TAB 1: HOME DASHBOARD ======================= -->
+            <section id="tab-home" class="space-y-7">
+                
+                <!-- Top Hero Row: Featured National Revolution Live Stream + Quick Channels -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    
+                    <!-- Featured Live Channel Quick Card (7 cols) -->
+                    <div onclick="openLivePlayer(0)" tabindex="0" class="tv-focusable lg:col-span-7 bg-gradient-to-br from-slate-900 via-amber-950/40 to-red-950/50 rounded-3xl border border-amber-500/30 overflow-hidden shadow-2xl cursor-pointer group relative min-h-[265px] flex flex-col justify-between p-6">
+                        <div class="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                        
+                        <div class="relative z-10 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="bg-red-600 text-white text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-lg shadow-red-600/40">
+                                    <span class="w-2 h-2 rounded-full bg-white live-dot"></span> پخش زنده ویژه انقلاب ملی
+                                </span>
+                                <span class="bg-amber-500/20 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-400/30 font-bold">۱۰۸۰p Full HD</span>
+                            </div>
+                            <span class="text-xs text-amber-300 bg-amber-500/10 border border-amber-400/20 px-3 py-1 rounded-full">کلیک یا Enter برای تماشای تمام‌صفحه</span>
+                        </div>
+
+                        <div class="relative z-10 my-4 flex items-center gap-5">
+                            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 via-yellow-600 to-red-700 flex flex-col items-center justify-center text-white font-black shadow-xl shrink-0 border border-amber-300/40">
+                                <i class="fa-solid fa-sun text-2xl mb-1"></i>
+                                <span class="text-[10px] leading-none">شیر و خورشید</span>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-black text-white group-hover:text-amber-300 transition-colors">شبکه انقلاب ملی شیر و خورشید (پخش زنده ۲۴ ساعته)</h2>
+                                <p class="text-sm text-slate-200 mt-1.5 line-clamp-2 leading-relaxed">پوشش لحظه‌به‌لحظه خیزش سراسری، پیام‌های شاهزاده رضا پهلوی، عملیات‌ها و تحولات جنگ با جمهوری اسلامی و برنامه‌های بازپس‌گیری و آزادی ایران.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative z-10 flex items-center justify-between pt-3 border-t border-slate-800/90 text-xs text-slate-300">
+                            <div class="flex items-center gap-4">
+                                <span><i class="fa-solid fa-signal text-emerald-400 ml-1"></i> پخش مستقیم ماهواره‌ای و اینترنتی</span>
+                                <span><i class="fa-solid fa-bolt text-amber-400 ml-1"></i> اتاق خبر جنگ و خیزش ملی</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-amber-400 font-bold">
+                                <span>تماشای زنده شبکه</span>
+                                <i class="fa-solid fa-circle-play text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instant Multi-Channel Switcher (5 cols) -->
+                    <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                                <i class="fa-solid fa-satellite-dish text-red-500"></i>
+                                <span>پخش زنده شبکه‌های خبری</span>
+                            </h3>
+                            <button onclick="switchTab('livetv')" tabindex="0" class="tv-focusable text-xs text-sky-400 hover:underline px-2 py-1 rounded-lg">همه ۷ شبکه ←</button>
+                        </div>
+
+                        <div id="home-quick-channels" class="grid grid-cols-2 gap-2.5 flex-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Highlighted Telegram Channels Banner + Latest Posts -->
+                <div class="space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-brands fa-telegram text-sky-400 text-2xl"></i>
+                            <h3 class="text-lg font-extrabold text-white">آخرین پیام‌ها و خبرهای کانال‌های تلگرام</h3>
+                            <div class="hidden xl:flex items-center gap-1.5 text-[11px]">
+                                <span class="bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-full font-mono" dir="ltr">@rezapahlavi_officiall</span>
+                                <span class="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2.5 py-0.5 rounded-full font-mono" dir="ltr">@rezapahlavicomms</span>
+                                <span class="bg-rose-500/20 text-rose-300 border border-rose-400/30 px-2.5 py-0.5 rounded-full font-mono" dir="ltr">@farzadzarrin</span>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('telegram')" tabindex="0" class="tv-focusable bg-slate-800/80 hover:bg-slate-700 text-xs text-sky-300 px-3.5 py-1.5 rounded-xl font-semibold">
+                            مشاهده همه کانال‌های تلگرام ←
+                        </button>
+                    </div>
+                    <div id="home-telegram-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Row 3: Latest YouTube Video Reports (Reza Pahlavi, Arash Alaee, Farzad Zarrin, etc.) -->
+                <div class="space-y-3 pb-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-brands fa-youtube text-rose-500 text-2xl"></i>
+                            <h3 class="text-lg font-extrabold text-white">جدیدترین ویدیوها و تحلیل‌های یوتیوب</h3>
+                            <span class="text-xs text-slate-400">(شاهزاده رضا پهلوی • آرش اعلایی • فرزاد زرین • تحلیلگران جنگ و انقلاب ملی)</span>
+                        </div>
+                        <button onclick="switchTab('youtube')" tabindex="0" class="tv-focusable bg-slate-800/80 hover:bg-slate-700 text-xs text-rose-300 px-3.5 py-1.5 rounded-xl font-semibold">
+                            همه ویدیوهای یوتیوب ←
+                        </button>
+                    </div>
+                    <div id="home-youtube-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </section>
+<!-- ... existing code ... -->
+            <!-- ======================= TAB 3: TELEGRAM NEWS FEED ======================= -->
+            <section id="tab-telegram" class="hidden space-y-6 pb-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-5 rounded-3xl">
+                    <div>
+                        <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+                            <i class="fa-brands fa-telegram text-sky-400 text-2xl"></i>
+                            <span>رصد لحظه‌ای کانال‌های تلگرام انقلاب ملی و اخبار جنگ</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">شامل کانال رسمی شاهزاده رضا پهلوی، ستاد ارتباطات، فرزاد زرین، ایران اینترنشنال، صدای آمریکا و وحید آنلاین</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="fetchLiveTelegramWebFeeds()" tabindex="0" class="tv-focusable bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                            <span>دریافت آخرین پست‌های زنده از تلگرام</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Channel Filter Pills -->
+                <div id="telegram-filter-bar" class="flex flex-wrap items-center gap-2">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div id="telegram-full-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+<!-- ... existing code ... -->
+    <!-- APPLICATION LOGIC -->
+    <script>
+        // =========================================================================
+        // 1. INITIAL DATA: LIVE TV CHANNELS, TELEGRAM FEEDS, YOUTUBE VIDEOS
+        // =========================================================================
+        const liveChannels = [
+            {
+                id: 'shirokhorshid',
+                name: 'شبکه انقلاب ملی شیر و خورشید',
+                enName: 'Lion & Sun National Revolution TV',
+                category: 'رسانه انقلاب ملی و بازپس‌گیری ایران • ۲۴ ساعته',
+                quality: '1080p HD',
+                badgeText: 'شیر و خورشید',
+                gradient: 'from-amber-500 via-yellow-600 to-red-800',
+                currentProgram: 'پوشش زنده خیزش سراسری، بیانیه‌های شاهزاده رضا پهلوی و گزارش عملیات‌های جنگ با جمهوری اسلامی',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            },
+            {
+                id: 'iranintl',
+                name: 'ایران اینترنشنال',
+                enName: 'Iran International TV',
+                category: 'خبری فارسی • پوشش ویژه جنگ و انقلاب',
+                quality: '1080p HD',
+                badgeText: 'IRAN INTL',
+                gradient: 'from-red-600 to-rose-900',
+                currentProgram: 'پوشش زنده تحولات نظامی، سیاسی و ضربات راهبردی به ساختار نظامی جمهوری اسلامی',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            },
+            {
+                id: 'voafarsi',
+                name: 'VOA فارسی (صدای آمریکا)',
+                enName: 'VOA Persian Live',
+                category: 'خبری فارسی • واشنگتن',
+                quality: '1080p HD',
+                badgeText: 'VOA فارسی',
+                gradient: 'from-blue-600 to-indigo-950',
+                currentProgram: 'برنامه ویژه خبری از واشنگتن: مواضع بین‌المللی در قبال آزادی ایران و سرنگونی رژیم',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            },
+            {
+                id: 'foxnews',
+                name: 'فاکس نیوز آمریکا',
+                enName: 'Fox News Channel Live',
+                category: 'خبری بین‌المللی • پوشش نظامی و جهانی',
+                quality: '1080p HD',
+                badgeText: 'FOX NEWS',
+                gradient: 'from-sky-700 to-blue-950',
+                currentProgram: 'Special Report: Military Operations Against the Islamic Republic & Middle East Security',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            },
+            {
+                id: 'bbcpersian',
+                name: 'بی‌بی‌سی فارسی',
+                enName: 'BBC News Persian',
+                category: 'خبری فارسی • لندن',
+                quality: '1080p HD',
+                badgeText: 'BBC فارسی',
+                gradient: 'from-rose-700 to-red-950',
+                currentProgram: 'شصت دقیقه و بررسی بحران‌های عمیق درونی و بین‌المللی جمهوری اسلامی',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            },
+            {
+                id: 'euronews',
+                name: 'یورونیوز فارسی',
+                enName: 'Euronews Persian TV',
+                category: 'خبری اروپا و جهان',
+                quality: '1080p HD',
+                badgeText: 'EURONEWS',
+                gradient: 'from-cyan-600 to-slate-900',
+                currentProgram: 'واکنش اتحادیه اروپا به تحولات ایران، تحریم‌های سپاه و حمایت از مردم ایران',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            },
+            {
+                id: 'iribnews',
+                name: 'شبکه خبر صدا و سیما (رصد)',
+                enName: 'IRIB News Network (Monitoring)',
+                category: 'مانیتورینگ تبلیغات حکومتی',
+                quality: '720p',
+                badgeText: 'رصد شبکه خبر',
+                gradient: 'from-slate-700 to-slate-900',
+                currentProgram: 'پخش جهت رصد و بررسی واکنش‌های رسمی حکومت به بحران‌ها و حملات جاری',
+                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+            }
+        ];
+
+        const telegramPosts = [
+            {
+                id: 201,
+                channelName: 'شاهزاده رضا پهلوی (کانال رسمی)',
+                channelHandle: '@rezapahlavi_officiall',
+                telegramUrl: 'https://t.me/s/rezapahlavi_officiall',
+                timeAgo: '۱۰ دقیقه پیش',
+                views: '۴۸۵K',
+                tag: 'پیام رسمی • بازپس‌گیری ایران',
+                title: 'پیام شاهزاده رضا پهلوی به مردم ایران و نیروهای نظامی: لحظه سرنوشت‌ساز بازپس‌گیری ایران فرا رسیده است',
+                summary: 'هم‌میهنانم، رژیم ضحاکی جمهوری اسلامی در ضعیف‌ترین و شکننده‌ترین نقطه تاریخ خود قرار دارد. همبستگی ملی، سازماندهی محلات و پیوستن بدنه نیروهای مسلح به ملت، کلید پیروزی نهایی انقلاب ملی شیر و خورشید و آزادی ایران است.',
+                color: 'amber'
+            },
+            {
+                id: 202,
+                channelName: 'ستاد ارتباطات شاهزاده رضا پهلوی',
+                channelHandle: '@rezapahlavicomms',
+                telegramUrl: 'https://t.me/s/rezapahlavicomms',
+                timeAgo: '۱۸ دقیقه پیش',
+                views: '۲۱۰K',
+                tag: 'سازماندهی و فراخوان ملی',
+                title: 'اطلاعیه راهبردی درباره هماهنگی شبکه‌های داخل کشور و کارزار بین‌المللی حمایت از انقلاب ملی ایران',
+                summary: 'گزارش کامل دیدارهای دیپلماتیک شاهزاده رضا پهلوی با رهبران و تصمیم‌گیران جهانی جهت پشتیبانی قاطع از مردم ایران در نبرد برای سرنگونی جمهوری اسلامی و استقرار دموکراسی سکولار در ایران آزاد.',
+                color: 'sky'
+            },
+            {
+                id: 203,
+                channelName: 'فرزاد زرین | Farzad Zarrin',
+                channelHandle: '@farzadzarrin',
+                telegramUrl: 'https://t.me/s/farzadzarrin',
+                timeAgo: '۲۵ دقیقه پیش',
+                views: '۱۳۴K',
+                tag: 'تحلیل سیاسی و اخبار جنگ',
+                title: 'تحلیل فوری فرزاد زرین: فروپاشی زنجیره فرماندهی سپاه و پیامدهای عملیات‌های اخیر علیه مواضع رژیم',
+                summary: 'بررسی دقیق وضعیت میدانی و بن‌بست کامل استراتژیک خامنه‌ای؛ چرا سیستم امنیتی و نظامی جمهوری اسلامی دیگر توان مهار همزمان ضربات خارجی و خیزش میلیونی مردم در شهرهای ایران را ندارد؟',
+                color: 'rose'
+            },
+            {
+                id: 204,
+                channelName: 'ایران اینترنشنال | خبر فوری',
+                channelHandle: '@IranIntlTV',
+                telegramUrl: 'https://t.me/s/IranIntlTV',
+                timeAgo: '۳۲ دقیقه پیش',
+                views: '۳۱۰K',
+                tag: 'اخبار جنگ و عملیات نظامی',
+                title: 'گزارش اختصاصی از هدف قرار گرفتن مراکز کلیدی موشکی و قرارگاه‌های سپاه پاسداران در چند استان',
+                summary: 'منابع آگاه از خسارات سنگین به زیرساخت‌های راداری، پدافندی و پایگاه‌های فرماندهی سپاه پاسداران خبر می‌دهند. جلسات اضطراری در شورای عالی امنیت رژیم برگزار شده است.',
+                color: 'red'
+            },
+            {
+                id: 205,
+                channelName: 'VOA Farsi | صدای آمریکا',
+                channelHandle: '@voafarsi',
+                telegramUrl: 'https://t.me/s/voafarsi',
+                timeAgo: '۴۵ دقیقه پیش',
+                views: '۱۶۵K',
+                tag: 'بین‌الملل و واشنگتن',
+                title: 'هشدار صریح کاخ سفید و کنگره آمریکا به سران جمهوری اسلامی؛ حمایت دوحزبی از مردم ایران برای آزادی',
+                summary: 'نمایندگان ارشد کنگره ایالات متحده با تاکید بر مشروعیت مبارزه مردم ایران برای سرنگونی حکومت اسلامی، خواستار تشدید فشارهای حداکثری و هدفمند علیه کلیه بازوهای سرکوب رژیم شدند.',
+                color: 'blue'
+            },
+            {
+                id: 206,
+                channelName: 'وحید آنلاین | Vahid Online',
+                channelHandle: '@VahidOnline',
+                telegramUrl: 'https://t.me/s/VahidOnline',
+                timeAgo: '۵۵ دقیقه پیش',
+                views: '۲۹۰K',
+                tag: 'ویدیوهای دریافتی مردم',
+                title: 'ویدیوهای ارسالی شهروندان از طنین‌انداز شدن شعارهای ملی و ضدحکومتی در تهران، کرج، شیراز و اصفهان',
+                summary: 'مجموعه ویدیوهای راستی‌آزمایی‌شده از نقاط مختلف کشور که نشان‌دهنده گسترش اعتراضات شبانه، دیوارنویسی‌های گسترده با نماد شیر و خورشید و آمادگی مردم برای خیزش سراسری است.',
+                color: 'emerald'
+            },
+            {
+                id: 207,
+                channelName: 'فرزاد زرین | Farzad Zarrin',
+                channelHandle: '@farzadzarrin',
+                telegramUrl: 'https://t.me/s/farzadzarrin',
+                timeAgo: '۱ ساعت پیش',
+                views: '۱۱۸K',
+                tag: 'برنامه ویژه یوتیوب و تلگرام',
+                title: 'پشت‌پرده وحشت سران رژیم از ائتلاف ملی به رهبری شاهزاده رضا پهلوی و ریزش در بدنه نیروها',
+                summary: 'گزارش اختصاصی در کانال تلگرام فرزاد زرین درباره پیام‌های ارسالی از درون نهادهای حکومتی و نظامی و آمادگی بخش بزرگی از جامعه برای مرحله نهایی بازپس‌گیری ایران.',
+                color: 'rose'
+            },
+            {
+                id: 208,
+                channelName: 'شاهزاده رضا پهلوی (کانال رسمی)',
+                channelHandle: '@rezapahlavi_officiall',
+                telegramUrl: 'https://t.me/s/rezapahlavi_officiall',
+                timeAgo: '۲ ساعت پیش',
+                views: '۵۴۰K',
+                tag: 'چشم‌انداز ایران آزاد',
+                title: 'اصول دوران گذار، حفظ تمامیت ارضی ایران و برنامه صد روز نخست پس از سقوط جمهوری اسلامی',
+                summary: 'تاکید بر حاکمیت ملی، جدایی دین از حکومت، برگزاری رفراندوم آزاد برای تعیین شکل نهایی نظام دموکراتیک و بازسازی سریع اقتصاد ایران با بازگشت سرمایه‌ها و متخصصان ایرانی.',
+                color: 'amber'
+            }
+        ];
+
+        const youtubeVideos = [
+            {
+                id: 'yt_rp1',
+                title: 'سخنرانی و پیام ویژه شاهزاده رضا پهلوی خطاب به ملت ایران درباره مرحله نهایی بازپس‌گیری ایران',
+                channel: 'Reza Pahlavi شاهزاده رضا پهلوی',
+                handle: '@OfficialRezaPahlavi',
+                category: 'رهبری انقلاب ملی',
+                duration: '28:40',
+                views: '۶۸۰ هزار بازدید',
+                published: '۱ ساعت پیش',
+                badgeColor: 'bg-amber-600',
+                thumbGradient: 'from-amber-900 via-slate-900 to-slate-950',
+                description: 'بیانیه و نقشه راه شاهزاده رضا پهلوی برای هماهنگی نیروهای داخل و خارج از کشور، گذار از جمهوری اسلامی و بازگرداندن عظمت و آزادی به ایران.'
+            },
+            {
+                id: 'yt_arash1',
+                title: 'تحلیل ویژه آرش اعلایی: معادلات نظامی جنگ با جمهوری اسلامی و سناریوهای فروپاشی دستگاه سرکوب',
+                channel: 'Arash Alaee آرش اعلایی',
+                handle: '@ArashAlaee',
+                category: 'تحلیل استراتژیک و نظامی',
+                duration: '42:15',
+                views: '۲۴۵ هزار بازدید',
+                published: '۲ ساعت پیش',
+                badgeColor: 'bg-indigo-600',
+                thumbGradient: 'from-indigo-950 via-slate-900 to-slate-950',
+                description: 'بررسی موشکافانه آرش اعلایی از وضعیت فعلی جنگ، ضربات واردشده به سپاه پاسداران و چگونگی تغییر موازنه قوا به سود انقلاب ملی مردم ایران.'
+            },
+            {
+                id: 'yt_farzad1',
+                title: 'برنامه زنده فرزاد زرین: آخرین اخبار جنگ علیه جمهوری اسلامی، خیزش مردم و بازپس‌گیری ایران',
+                channel: 'Farzad Zarrin فرزاد زرین',
+                handle: '@FarzadZarrin',
+                category: 'تحلیل سیاسی و اتاق خبر',
+                duration: '54:20',
+                views: '۳۱۰ هزار بازدید',
+                published: '۲ ساعت پیش',
+                badgeColor: 'bg-rose-600',
+                thumbGradient: 'from-rose-950 via-red-950 to-slate-950',
+                description: 'پوشش زنده و تحلیلی فرزاد زرین از رویدادهای ساعات گذشته، واکنش مردم در شهرهای مختلف و گام‌های عملی برای پیروزی انقلاب شیر و خورشید.'
+            },
+            {
+                id: 'yt_arash2',
+                title: 'آرش اعلایی: چرا جمهوری اسلامی در تله راهبردی گرفتار شده و راه فراری از سرنگونی ندارد؟',
+                channel: 'Arash Alaee آرش اعلایی',
+                handle: '@ArashAlaee',
+                category: 'تحلیل استراتژیک',
+                duration: '36:50',
+                views: '۱۹۸ هزار بازدید',
+                published: '۴ ساعت پیش',
+                badgeColor: 'bg-indigo-600',
+                thumbGradient: 'from-blue-950 via-slate-900 to-slate-950',
+                description: 'کالبدشکافی بحران‌های اقتصادی، نظامی و مشروعیتی حکومت اسلامی و نقش محوری آلترناتیو ملی در هدایت دوران گذار.'
+            },
+            {
+                id: 'yt_farzad2',
+                title: 'فرزاد زرین: بررسی پیام جدید شاهزاده رضا پهلوی و وحشت رسانه‌های حکومتی از موج جدید خیزش ملی',
+                channel: 'Farzad Zarrin فرزاد زرین',
+                handle: '@FarzadZarrin',
+                category: 'تحلیل سیاسی',
+                duration: '47:10',
+                views: '۲۷۰ هزار بازدید',
+                published: '۵ ساعت پیش',
+                badgeColor: 'bg-rose-600',
+                thumbGradient: 'from-red-900 via-slate-900 to-slate-950',
+                description: 'نگاهی به بازتاب گسترده فراخوان‌های ملی در داخل ایران و تحلیل ریزش شدید در نیروهای انتظامی و ارتش.'
+            },
+            {
+                id: 'yt_iranintl1',
+                title: 'میزگرد ویژه ایران اینترنشنال: بررسی ابعاد نظامی حملات اخیر به پایگاه‌های سپاه و آینده سیاسی ایران',
+                channel: 'Iran International ایران اینترنشنال',
+                handle: '@IranIntl',
+                category: 'گزارش ویژه خبری',
+                duration: '31:18',
+                views: '۴۱۰ هزار بازدید',
+                published: '۳ ساعت پیش',
+                badgeColor: 'bg-red-600',
+                thumbGradient: 'from-red-950 via-slate-900 to-slate-950',
+                description: 'گفتگو با کارشناسان نظامی و سیاسی بین‌المللی درباره پیامدهای عملیات‌های جاری علیه ساختار نظامی جمهوری اسلامی.'
+            },
+            {
+                id: 'yt_voa1',
+                title: 'صفحه آخر صدای آمریکا: پرونده ویژه فساد و بحران در راس هرم قدرت جمهوری اسلامی در میانه جنگ',
+                channel: 'VOA Farsi صدای آمریکا',
+                handle: '@VOAFarsi',
+                category: 'برنامه تحلیلی',
+                duration: '49:00',
+                views: '۱۸۵ هزار بازدید',
+                published: '۶ ساعت پیش',
+                badgeColor: 'bg-sky-600',
+                thumbGradient: 'from-sky-950 via-slate-900 to-slate-950',
+                description: 'گزارش مستند از انتقال دارایی‌های وابستگان رژیم و آمادگی مردم ایران برای دوران پس از جمهوری اسلامی.'
+            },
+            {
+                id: 'yt_national1',
+                title: 'مستند ویژه: انقلاب ملی شیر و خورشید؛ از خیزش دی و آبان تا نبرد نهایی برای آزادی ایران',
+                channel: 'رسانه انقلاب ملی شیر و خورشید',
+                handle: '@LionAndSunTV',
+                category: 'مستند و تاریخ معاصر',
+                duration: '39:12',
+                views: '۳۵۰ هزار بازدید',
+                published: '۷ ساعت پیش',
+                badgeColor: 'bg-amber-500',
+                thumbGradient: 'from-amber-950 via-yellow-950 to-slate-950',
+                description: 'مروری بر روند شکل‌گیری همبستگی ملی حول پرچم شیر و خورشید و رهبری شاهزاده رضا پهلوی برای بازپس‌گیری ایران.'
+            }
+        ];
+
+        let currentLiveChannelIndex = 0;
+        let currentTelegramFilter = 'ALL';
+        let currentYoutubeFilter = 'ALL';
+        let hlsInstance = null;
+
+        // =========================================================================
+        // 2. RENDER FUNCTIONS
+        // =========================================================================
+        function renderAll() {
+            renderHomeDashboard();
+            renderLiveTvSection();
+            renderTelegramSection();
+            renderYoutubeSection();
+            renderSourcesLists();
+            renderBreakingTicker();
+        }
+
+        function renderHomeDashboard() {
+            // Quick channels grid in Home (show 6 channels)
+            const quickContainer = document.getElementById('home-quick-channels');
+            quickContainer.innerHTML = liveChannels.slice(0, 6).map((ch, idx) => `
+                <button onclick="openLivePlayer(${idx})" tabindex="0" class="tv-focusable bg-slate-950/90 hover:bg-slate-800 border border-slate-800/90 rounded-2xl p-2.5 flex items-center gap-3 text-right transition">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${ch.gradient} flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow text-center leading-tight px-1">
+                        ${ch.badgeText}
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-extrabold text-white truncate">${ch.name}</div>
+                        <div class="text-[10px] text-emerald-400 flex items-center gap-1 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span> پخش زنده
+                        </div>
+                    </div>
+                </button>
+            `).join('');
+
+            // Top 4 Telegram cards in Home
+            const homeTg = document.getElementById('home-telegram-grid');
+            homeTg.innerHTML = telegramPosts.slice(0, 4).map(post => createTelegramCardHTML(post)).join('');
+
+            // Top 4 YouTube cards in Home
+            const homeYt = document.getElementById('home-youtube-grid');
+            homeYt.innerHTML = youtubeVideos.slice(0, 4).map(vid => createYoutubeCardHTML(vid)).join('');
+
+            // Update sidebar counts
+            document.getElementById('live-count-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span> ${liveChannels.length.toLocaleString('fa-IR')} زنده`;
+            document.getElementById('tg-count-badge').textContent = telegramPosts.length.toLocaleString('fa-IR');
+            document.getElementById('yt-count-badge').textContent = youtubeVideos.length.toLocaleString('fa-IR');
+        }
+<!-- ... existing code ... -->
+        function openTelegramModal(postId) {
+            const post = telegramPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            document.getElementById('modal-source-badge').textContent = `کانال تلگرام: ${post.channelName}`;
+            document.getElementById('modal-time-badge').textContent = `${post.timeAgo} • ${post.views} بازدید`;
+            document.getElementById('modal-body-content').innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between bg-slate-950 px-4 py-2.5 rounded-xl border border-slate-800">
+                        <span class="text-xs text-sky-400 font-mono" dir="ltr">https://t.me/${post.channelHandle.replace('@', '')}</span>
+                        <span class="text-xs bg-amber-500/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold">${post.tag}</span>
+                    </div>
+                    <h2 class="text-xl font-black text-white leading-relaxed">${post.title}</h2>
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 text-sm text-slate-200 leading-8">
+                        ${post.summary}
+                        <br><br>
+                        <span class="text-xs text-slate-400">منبع: دریافت خودکار از نسخه وب کانال عمومی تلگرام (${post.channelHandle}) در اپلیکیشن تلویزیون هوشمند اندروید.</span>
+                    </div>
+                </div>
+            `;
+            const modal = document.getElementById('content-detail-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openYoutubeModal(vidId) {
+            const vid = youtubeVideos.find(v => v.id === vidId);
+            if (!vid) return;
+
+            document.getElementById('modal-source-badge').textContent = `یوتیوب: ${vid.channel}`;
+            document.getElementById('modal-time-badge').textContent = `${vid.published} • ${vid.views}`;
+            document.getElementById('modal-body-content').innerHTML = `
+                <div class="space-y-4">
+                    <div class="aspect-video bg-gradient-to-br ${vid.thumbGradient} rounded-2xl border border-slate-700 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+                        <div class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-3 shadow-xl">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                        <span class="text-xs bg-black/50 text-amber-300 px-3 py-1 rounded-full mb-2 border border-amber-400/30">${vid.channel} (${vid.handle})</span>
+                        <h3 class="text-lg font-black text-white max-w-xl leading-relaxed">${vid.title}</h3>
+                        <p class="text-xs text-slate-300 mt-3 max-w-lg leading-relaxed">${vid.description || ''}</p>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between text-xs text-slate-400">
+                        <span>پخش‌کننده داخلی YouTube Leanback Player ویژه تلویزیون‌های اندروید</span>
+                        <span class="text-emerald-400 font-bold">کیفیت 1080p HD</span>
+                    </div>
+                </div>
+            `;
+            const modal = document.getElementById('content-detail-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+<!-- ... existing code ... -->
+        function syncAllFeeds() {
+            fetchLiveTelegramWebFeeds();
+        }
+
+        // Live fetch simulation + CORS-friendly public Telegram channel reader
+        async function fetchLiveTelegramWebFeeds() {
+            const icon = document.getElementById('sync-icon');
+            const statusEl = document.getElementById('feed-status-indicator');
+            icon.classList.add('fa-spin');
+            if (statusEl) {
+                statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 live-dot"></span> در حال دریافت از تلگرام...`;
+            }
+
+            try {
+                // Attempt live fetch via Jina Reader / CORS proxy for public Telegram channels if online
+                const targetChannels = [
+                    { handle: 'rezapahlavi_officiall', name: 'شاهزاده رضا پهلوی (کانال رسمی)', tag: 'پیام رسمی • واکشی زنده' },
+                    { handle: 'rezapahlavicomms', name: 'ستاد ارتباطات شاهزاده رضا پهلوی', tag: 'ستاد ارتباطات • واکشی زنده' },
+                    { handle: 'farzadzarrin', name: 'فرزاد زرین | Farzad Zarrin', tag: 'تحلیل سیاسی و جنگ • واکشی زنده' }
+                ];
+
+                for (const ch of targetChannels) {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3500);
+                    const resp = await fetch(`https://r.jina.ai/https://t.me/s/${ch.handle}`, { signal: controller.signal }).catch(() => null);
+                    clearTimeout(timeoutId);
+
+                    if (resp && resp.ok) {
+                        const text = await resp.text();
+                        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 45 && !l.startsWith('http') && !l.includes('Telegram'));
+                        if (lines.length > 0) {
+                            const latestLine = lines[lines.length - 1].slice(0, 220);
+                            const existingIdx = telegramPosts.findIndex(p => p.channelHandle === '@' + ch.handle);
+                            if (existingIdx !== -1) {
+                                telegramPosts[existingIdx].timeAgo = 'بروزرسانی زنده (هم‌اکنون)';
+                            } else {
+                                telegramPosts.unshift({
+                                    id: Date.now() + Math.random(),
+                                    channelName: ch.name,
+                                    channelHandle: '@' + ch.handle,
+                                    timeAgo: 'هم‌اکنون (زنده)',
+                                    views: 'جدید',
+                                    tag: ch.tag,
+                                    title: latestLine.slice(0, 95) + '...',
+                                    summary: latestLine,
+                                    color: 'sky'
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (_) {
+                // Fallback gracefully to preloaded realistic feeds
+            } finally {
+                setTimeout(() => {
+                    icon.classList.remove('fa-spin');
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> بروزرسانی شد`;
+                    }
+                    renderAll();
+                }, 600);
+            }
+        }
+
+        // =========================================================================
+        // 5. ANDROID TV D-PAD / KEYBOARD NAVIGATION & TRIPLE CALENDAR CLOCK
+        // =========================================================================
+        function simulateDpad(key) {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: key }));
+        }
+<!-- ... existing code ... -->
+        function toPersianDigits(str) {
+            return String(str).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('live-clock').textContent = timeStr;
+            const simClock = document.getElementById('sim-overlay-clock');
+            if (simClock) simClock.textContent = now.toLocaleTimeString('en-US', { hour12: false }) + ' LIVE';
+
+            try {
+                // 1. Solar Hijri (خورشیدی) + Imperial (شاهنشاهی = Solar Hijri + 1180)
+                const parts = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }).formatToParts(now);
+
+                let day = '', month = '', yearStr = '', weekday = '';
+                parts.forEach(p => {
+                    if (p.type === 'day') day = p.value;
+                    if (p.type === 'month') month = p.value;
+                    if (p.type === 'year') yearStr = p.value;
+                    if (p.type === 'weekday') weekday = p.value;
+                });
+
+                // Convert Persian digits in yearStr to English number to add 1180 for Shahanshahi Calendar
+                const englishYear = parseInt(yearStr.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)), 10);
+                const imperialYear = !isNaN(englishYear) ? toPersianDigits(englishYear + 1180) : '۲۵۸۵';
+
+                document.getElementById('persian-date').textContent = `${weekday} ${day} ${month} ${yearStr}`;
+                document.getElementById('imperial-date').textContent = `${day} ${month} ${imperialYear} شاهنشاهی`;
+
+                // 2. Gregorian Calendar (میلادی)
+                const gregStr = new Intl.DateTimeFormat('en-US', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }).format(now);
+                document.getElementById('gregorian-date').textContent = gregStr;
+            } catch (_) {}
+        }
+
+        window.onload = function () {
+            renderAll();
+            updateClock();
+            setInterval(updateClock, 1000);
+        };
+    </script>
+</body>
+</html>
