@@ -1,0 +1,375 @@
+name: Build Android TV APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-tv-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 2. Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 3. Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: 4. Generate Native Android TV Project Structure
+        shell: bash
+        run: |
+          mkdir -p app/src/main/java/ir/nationaltv/hub
+          mkdir -p app/src/main/assets
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/res/values
+
+          # Copy HTML UI into Android Assets
+          if [ -f "index.html" ]; then
+            cp index.html app/src/main/assets/index.html
+          elif [ -f "android_tv_news_hub.html" ]; then
+            cp android_tv_news_hub.html app/src/main/assets/index.html
+          else
+            echo "ERROR: index.html not found in repository root!"
+            exit 1
+          fi
+
+          # 1. Create settings.gradle
+          cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "IranNationalTVHub"
+          include ':app'
+          EOF
+
+          # 2. Create root build.gradle
+          cat << 'EOF' > build.gradle
+          plugins {
+              id 'com.android.application' version '8.4.0' apply false
+          }
+          EOF
+
+          # 3. Create gradle.properties
+          cat << 'EOF' > gradle.properties
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          # 4. Create app/build.gradle
+          cat << 'EOF' > app/build.gradle
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'ir.nationaltv.hub'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId "ir.nationaltv.hub"
+                  minSdk 21
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0.0"
+              }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      signingConfig signingConfigs.debug
+                  }
+                  debug {
+                      debuggable true
+                  }
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+
+          dependencies {
+          }
+          EOF
+
+          # 5. Create strings.xml
+          cat << 'EOF' > app/src/main/res/values/strings.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="app_name">رسانه انقلاب ملی</string>
+          </resources>
+          EOF
+
+          # 6. Create Android TV Banner Drawable (320x180 Leanback Banner)
+          cat << 'EOF' > app/src/main/res/drawable/tv_banner.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item>
+                  <shape android:shape="rectangle">
+                      <gradient
+                          android:angle="0"
+                          android:startColor="#0F172A"
+                          android:centerColor="#1E293B"
+                          android:endColor="#451A03"
+                          android:type="linear" />
+                      <corners android:radius="12dp" />
+                      <stroke android:width="3dp" android:color="#F59E0B" />
+                  </shape>
+              </item>
+          </layer-list>
+          EOF
+
+          # 7. Create App Icon Drawable
+          cat << 'EOF' > app/src/main/res/drawable/ic_launcher.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item>
+                  <shape android:shape="oval">
+                      <solid android:color="#F59E0B" />
+                      <stroke android:width="4dp" android:color="#10B981" />
+                  </shape>
+              </item>
+          </layer-list>
+          EOF
+
+          # 8. Create AndroidManifest.xml (Full Android TV Leanback + Standard Launcher)
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="ir.nationaltv.hub">
+
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+              <uses-feature
+                  android:name="android.software.leanback"
+                  android:required="false" />
+              <uses-feature
+                  android:name="android.hardware.touchscreen"
+                  android:required="false" />
+
+              <application
+                  android:allowBackup="true"
+                  android:banner="@drawable/tv_banner"
+                  android:icon="@drawable/ic_launcher"
+                  android:label="@string/app_name"
+                  android:hardwareAccelerated="true"
+                  android:usesCleartextTraffic="true"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+                      android:exported="true"
+                      android:screenOrientation="landscape">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                          <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+
+          </manifest>
+          EOF
+
+          # 9. Create MainActivity.java with Serverless Native HTTP Bridge for Telegram & YouTube
+          cat << 'EOF' > app/src/main/java/ir/nationaltv/hub/MainActivity.java
+          package ir.nationaltv.hub;
+
+          import android.annotation.SuppressLint;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.view.KeyEvent;
+          import android.view.View;
+          import android.view.Window;
+          import android.view.WindowManager;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+
+          import java.io.BufferedReader;
+          import java.io.InputStream;
+          import java.io.InputStreamReader;
+          import java.net.HttpURLConnection;
+          import java.net.URL;
+          import java.nio.charset.StandardCharsets;
+
+          public class MainActivity extends Activity {
+
+              private WebView webView;
+
+              @SuppressLint("SetJavaScriptEnabled")
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  requestWindowFeature(Window.FEATURE_NO_TITLE);
+                  getWindow().setFlags(
+                      WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                      WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                  );
+
+                  webView = new WebView(this);
+                  webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                  webView.setBackgroundColor(0xFF060913);
+
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setDatabaseEnabled(true);
+                  settings.setMediaPlaybackRequiresUserGesture(false);
+                  settings.setAllowFileAccess(true);
+                  settings.setAllowContentAccess(true);
+                  settings.setAllowFileAccessFromFileURLs(true);
+                  settings.setAllowUniversalAccessFromFileURLs(true);
+                  settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                  settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+                  settings.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+
+                  webView.addJavascriptInterface(new NativeBridge(), "AndroidBridge");
+
+                  webView.setWebChromeClient(new WebChromeClient());
+                  webView.setWebViewClient(new WebViewClient() {
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                          return false;
+                      }
+
+                      @Override
+                      public void onPageFinished(WebView view, String url) {
+                          super.onPageFinished(view, url);
+                          // Connect web app fetcher directly to Android Native HTTP (100% CORS-free)
+                          String bridgeJs = "window.fetchViaCorsProxy = async function(targetUrl) {" +
+                              "  try {" +
+                              "    if (window.AndroidBridge && window.AndroidBridge.fetchUrl) {" +
+                              "      const nativeRes = window.AndroidBridge.fetchUrl(targetUrl);" +
+                              "      if (nativeRes && nativeRes.length > 50) return nativeRes;" +
+                              "    }" +
+                              "  } catch(e) { console.warn(e); }" +
+                              "  const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl));" +
+                              "  const d = await r.json();" +
+                              "  return d.contents;" +
+                              "};";
+                          view.evaluateJavascript(bridgeJs, null);
+                      }
+                  });
+
+                  setContentView(webView);
+                  loadAppHtml();
+              }
+
+              private void loadAppHtml() {
+                  try {
+                      InputStream is = getAssets().open("index.html");
+                      BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                      StringBuilder sb = new StringBuilder();
+                      String line;
+                      while ((line = reader.readLine()) != null) {
+                          sb.append(line).append("\n");
+                      }
+                      reader.close();
+                      // Load with HTTPS BaseURL so YouTube Live & Embeds work without Origin restrictions
+                      webView.loadDataWithBaseURL("https://tv.irannationalhub.org/", sb.toString(), "text/html", "UTF-8", null);
+                  } catch (Exception e) {
+                      webView.loadUrl("file:///android_asset/index.html");
+                  }
+              }
+
+              public static class NativeBridge {
+                  @JavascriptInterface
+                  public String fetchUrl(String urlString) {
+                      HttpURLConnection conn = null;
+                      try {
+                          URL url = new URL(urlString);
+                          conn = (HttpURLConnection) url.openConnection();
+                          conn.setInstanceFollowRedirects(true);
+                          conn.setConnectTimeout(10000);
+                          conn.setReadTimeout(10000);
+                          conn.setRequestMethod("GET");
+                          conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+                          conn.setRequestProperty("Accept-Language", "fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7");
+
+                          int status = conn.getResponseCode();
+                          InputStream inputStream = (status >= 200 && status < 400) ? conn.getInputStream() : conn.getErrorStream();
+                          BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                          StringBuilder response = new StringBuilder();
+                          String line;
+                          while ((line = reader.readLine()) != null) {
+                              response.append(line).append("\n");
+                          }
+                          reader.close();
+                          return response.toString();
+                      } catch (Exception e) {
+                          return "";
+                      } finally {
+                          if (conn != null) conn.disconnect();
+                      }
+                  }
+              }
+
+              @Override
+              public boolean onKeyDown(int keyCode, KeyEvent event) {
+                  if (keyCode == KeyEvent.KEYCODE_BACK) {
+                      webView.evaluateJavascript(
+                          "(function() {" +
+                          "  const modals = ['video-modal', 'news-modal', 'add-source-modal'];" +
+                          "  for (let id of modals) {" +
+                          "    const el = document.getElementById(id);" +
+                          "    if (el && el.classList.contains('active')) {" +
+                          "      window.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Escape'}));" +
+                          "      return 'HANDLED';" +
+                          "    }" +
+                          "  }" +
+                          "  return 'EXIT';" +
+                          "})();",
+                          value -> {
+                              if (value == null || !value.contains("HANDLED")) {
+                                  finish();
+                              }
+                          }
+                      );
+                      return true;
+                  }
+                  return super.onKeyDown(keyCode, event);
+              }
+          }
+          EOF
+
+      - name: 5. Build Signed APK with Gradle
+        run: gradle assembleRelease --no-daemon
+
+      - name: 6. Rename APK for Easy Download
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk Iran-National-TV-Hub.apk
+
+      - name: 7. Upload Ready-to-Install APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iran-National-TV-APK
+          path: Iran-National-TV-Hub.apk
