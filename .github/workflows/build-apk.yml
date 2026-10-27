@@ -27,19 +27,14 @@ jobs:
       - name: 4. Generate Signed Android Mobile Project
         shell: bash
         run: |
-          mkdir -p app/src/main/java/ir/khabarkhon/app
+          mkdir -p app/src/main/java/ir/khabarkhon/mobile
           mkdir -p app/src/main/assets
-          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/drawable
           mkdir -p app/src/main/res/values
 
           cp index.html app/src/main/assets/index.html
 
-          # Generate a valid PNG icon (prevents Package Installer crash on Samsung/Xiaomi)
-          base64 -d << 'EOF' > app/src/main/res/mipmap-hdpi/ic_launcher.png
-          iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABOSURBVHhe7c4xAQAwDASh+jf91cKkC8G7s5N9A94AaYBUQLogVZAuSBWkC1IF6YJUQbogVZAuSBWkC1IF6YJUQbogVZAuSBWkC9pgH1gB868N71EAAAAASUVORK5CYII=
-          EOF
-
-          # Generate Official Release Keystore (V1 + V2 Signing)
+          rm -f release-key.jks
           keytool -genkeypair -v \
             -keystore release-key.jks \
             -alias khabarkhon \
@@ -65,7 +60,7 @@ jobs:
                   mavenCentral()
               }
           }
-          rootProject.name = "KhabarKhonApp"
+          rootProject.name = "KhabarKhonMobile"
           include ':app'
           EOF
 
@@ -86,15 +81,15 @@ jobs:
           }
 
           android {
-              namespace 'ir.khabarkhon.app'
+              namespace 'ir.khabarkhon.mobile'
               compileSdk 34
 
               defaultConfig {
-                  applicationId "ir.khabarkhon.app"
+                  applicationId "ir.khabarkhon.mobile"
                   minSdk 21
                   targetSdk 33
-                  versionCode 10
-                  versionName "4.0.0"
+                  versionCode 11
+                  versionName "4.1.0"
               }
 
               signingConfigs {
@@ -111,7 +106,6 @@ jobs:
               buildTypes {
                   release {
                       minifyEnabled false
-                      shrinkResources false
                       signingConfig signingConfigs.release
                   }
               }
@@ -130,16 +124,38 @@ jobs:
           </resources>
           EOF
 
+          cat << 'EOF' > app/src/main/res/drawable/ic_launcher.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item>
+                  <shape android:shape="oval">
+                      <gradient
+                          android:angle="135"
+                          android:startColor="#10B981"
+                          android:centerColor="#F59E0B"
+                          android:endColor="#EF4444"
+                          android:type="linear" />
+                  </shape>
+              </item>
+              <item android:top="4dp" android:bottom="4dp" android:left="4dp" android:right="4dp">
+                  <shape android:shape="oval">
+                      <solid android:color="#060913" />
+                  </shape>
+              </item>
+          </layer-list>
+          EOF
+
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="ir.khabarkhon.mobile">
 
               <uses-permission android:name="android.permission.INTERNET" />
               <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
               <application
                   android:allowBackup="true"
-                  android:icon="@mipmap/ic_launcher"
+                  android:icon="@drawable/ic_launcher"
                   android:label="@string/app_name"
                   android:hardwareAccelerated="true"
                   android:usesCleartextTraffic="true"
@@ -159,8 +175,8 @@ jobs:
           </manifest>
           EOF
 
-          cat << 'EOF' > app/src/main/java/ir/khabarkhon/app/MainActivity.java
-          package ir.khabarkhon.app;
+          cat << 'EOF' > app/src/main/java/ir/khabarkhon/mobile/MainActivity.java
+          package ir.khabarkhon.mobile;
 
           import android.annotation.SuppressLint;
           import android.app.Activity;
