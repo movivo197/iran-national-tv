@@ -1,801 +1,2709 @@
-<!-- ... existing code ... -->
-    <style>
-        * {
-            user-select: none;
-            -webkit-user-drag: none;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #090d16;
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(234, 179, 8, 0.14) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(220, 38, 38, 0.16) 0px, transparent 50%);
-            color: #f8fafc;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>خبرخوان - تلویزیون هوشمند</title>
+  <style>
+    :root {
+      --bg-deep: #050811;
+      --bg-card: #0f172a;
+      --bg-card-hover: #1e293b;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --cyan: #38bdf8;
+      --emerald: #10b981;
+      --crimson: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
 
-        /* Android TV Focus Ring & Scale Effect */
-<!-- ... existing code ... -->
-    <!-- TOP STATUS BAR (Android TV Ambient Header) -->
-    <header class="h-20 px-6 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between shrink-0 z-30">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 via-yellow-600 to-red-700 flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-300/30">
-                <i class="fa-solid fa-sun text-white text-2xl"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-2.5">
-                    <h1 class="text-xl font-black tracking-tight text-white">مرکز خبر انقلاب ملی و آزادی ایران</h1>
-                    <span class="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-full font-bold">ویژه تلویزیون اندروید (Android TV)</span>
-                </div>
-                <p class="text-xs text-slate-400">پوشش زنده شبکه‌های خبری، کانال‌های تلگرام و یوتیوب بازپس‌گیری ایران و جنگ با جمهوری اسلامی</p>
-            </div>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
+        linear-gradient(180deg, #050811 0%, #0a1022 100%);
+      color: var(--text-main);
+      font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    }
+
+    /* Smooth GPU-safe Animations */
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+
+    @keyframes eqBar1 { 0%, 100% { height: 6px; } 50% { height: 18px; } }
+    @keyframes eqBar2 { 0%, 100% { height: 18px; } 50% { height: 5px; } }
+    @keyframes eqBar3 { 0%, 100% { height: 10px; } 50% { height: 20px; } }
+
+    @keyframes tickerMove {
+      0% { transform: translate3d(-100%, 0, 0); }
+      100% { transform: translate3d(100%, 0, 0); }
+    }
+
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translate3d(0, 14px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    /* App Layout */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      padding: 18px 28px 54px 28px;
+      justify-content: space-between;
+    }
+
+    /* Top Header */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 18px;
+      padding: 12px 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      flex-shrink: 0;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.4);
+    }
+
+    .brand-logo-inner {
+      width: 100%;
+      height: 100%;
+      background: #090d16;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      color: #000;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--gold-light);
+      margin-top: 3px;
+    }
+
+    /* Navigation Pills */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: rgba(30, 41, 59, 0.85);
+      border: 2px solid rgba(148, 163, 184, 0.2);
+      color: #cbd5e1;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .nav-btn.active-tab {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(16, 185, 129, 0.2));
+      border-color: var(--gold);
+      color: #fff;
+    }
+
+    /* Calendars & Clock Box */
+    .dates-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cal-pills {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .cal-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .cal-badge {
+      padding: 3px 9px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .cal-imperial {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fde68a;
+    }
+
+    .cal-solar {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+
+    .cal-greg {
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #bae6fd;
+      direction: ltr;
+    }
+
+    .clock-box {
+      background: #090e1a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      min-width: 115px;
+      text-align: center;
+    }
+
+    /* Universal TV Focus Highlight */
+    .tv-focusable {
+      outline: none;
+      position: relative;
+    }
+
+    .tv-focused {
+      transform: scale(1.045) translate3d(0, -3px, 0) !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.45), 0 14px 28px rgba(0, 0, 0, 0.75) !important;
+      z-index: 30 !important;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    /* Right Column: Live Monitor & Quick Channels */
+    .live-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .mini-player-card {
+      background: linear-gradient(160deg, #111c35 0%, #0a1020 100%);
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .mini-screen {
+      width: 100%;
+      height: 185px;
+      background: #000;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mini-screen-art {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1e293b 0%, #050811 100%);
+      text-align: center;
+      padding: 12px;
+    }
+
+    .live-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(220, 38, 38, 0.92);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulseDot 1.2s infinite;
+    }
+
+    .eq-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+    }
+    .eq-bar { width: 4px; background: var(--gold); border-radius: 2px; }
+    .eq-bar:nth-child(1) { animation: eqBar1 0.8s infinite; }
+    .eq-bar:nth-child(2) { animation: eqBar2 0.7s infinite; }
+    .eq-bar:nth-child(3) { animation: eqBar3 0.9s infinite; }
+
+    .channel-list-box {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--gold-light);
+      padding: 0 4px 4px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ch-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(30, 41, 59, 0.75);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .ch-item.playing {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(30, 41, 59, 0.9));
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+
+    .ch-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ch-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Left Column: Graphical Cards Feed */
+    .feed-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      overflow-y: auto;
+      padding-left: 6px;
+    }
+
+    .feed-column::-webkit-scrollbar,
+    .channel-list-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    .feed-column::-webkit-scrollbar-thumb,
+    .channel-list-box::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 3px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(125deg, #1e1b4b 0%, #0f172a 45%, #3b0764 100%);
+      border: 2px solid rgba(245, 158, 11, 0.45);
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--crimson);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      font-size: 19px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .hero-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      padding-bottom: 16px;
+    }
+
+    .media-card {
+      background: linear-gradient(180deg, #131c31 0%, #0b1120 100%);
+      border: 2px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      animation: cardEntrance 0.25s ease-out;
+      height: 225px;
+    }
+
+    .card-visual {
+      height: 105px;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      overflow: hidden;
+    }
+
+    .card-badge {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 2;
+    }
+
+    .card-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      z-index: 2;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+    }
+
+    .card-body {
+      padding: 12px 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-source {
+      font-size: 11px;
+      color: var(--gold-light);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #f1f5f9;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 5px 0;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 6px;
+    }
+
+    /* Breaking News Ticker Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: #090d16;
+      border-top: 2px solid rgba(245, 158, 11, 0.45);
+      display: flex;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .ticker-label {
+      background: linear-gradient(90deg, #dc2626, #991b1b);
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      height: 100%;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      font-size: 14px;
+      color: #fde68a;
+      font-weight: bold;
+      padding-left: 50px;
+      animation: tickerMove 38s linear infinite;
+    }
+
+    .remote-hints {
+      background: #111827;
+      height: 100%;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 11px;
+      color: #cbd5e1;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    .key-badge {
+      background: #374151;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-left: 4px;
+    }
+
+    /* Fullscreen Modal (Video & News Reader) */
+    .tv-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 17, 0.96);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      padding: 28px 40px;
+    }
+
+    .tv-modal.open {
+      display: flex;
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .modal-close-btn {
+      background: #ef4444;
+      color: #fff;
+      border: 2px solid #fca5a5;
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .player-stage {
+      flex: 1;
+      background: #000;
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .news-stage {
+      flex: 1;
+      background: #0f172a;
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      border-radius: 18px;
+      padding: 28px;
+      overflow-y: auto;
+      line-height: 1.9;
+      font-size: 19px;
+      color: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <!-- HEADER -->
+    <header class="top-header">
+      <div class="brand-box">
+        <div class="brand-logo">
+          <div class="brand-logo-inner">🦁</div>
         </div>
-
-        <!-- Quick Actions & Multi-Calendar Clock -->
-        <div class="flex items-center gap-3.5">
-            <!-- Live Telegram Web Fetch Button -->
-            <button onclick="fetchLiveTelegramWebFeeds()" tabindex="0" class="tv-focusable flex items-center gap-2 bg-sky-600/20 hover:bg-sky-600/30 border border-sky-400/40 text-sky-300 px-3.5 py-2 rounded-xl text-xs font-bold">
-                <i id="sync-icon" class="fa-solid fa-arrows-rotate text-sky-400"></i>
-                <span>واکشی زنده تلگرام و یوتیوب</span>
-            </button>
-
-            <!-- GitHub APK Export Info Button -->
-            <button onclick="openApkModal()" tabindex="0" class="tv-focusable flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/20">
-                <i class="fa-brands fa-android text-base"></i>
-                <span>ساخت APK در گیت‌هاب</span>
-            </button>
-
-            <!-- Triple Calendar & Live Digital Clock Box (شاهنشاهی، خورشیدی، میلادی) -->
-            <div class="bg-slate-900/95 border border-slate-700/80 px-4 py-1.5 rounded-2xl flex items-center gap-4 shadow-inner">
-                <div class="text-left border-l border-slate-800 pl-3">
-                    <div id="live-clock" class="text-lg font-black text-amber-400 tracking-wider leading-tight font-mono">20:45:12</div>
-                    <div class="text-[10px] text-emerald-400 font-bold flex items-center gap-1 justify-end">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> به وقت ایران
-                    </div>
-                </div>
-                <div class="flex flex-col gap-0.5 text-right text-[11px]">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/30 px-1.5 py-0.2 rounded font-bold">شاهنشاهی</span>
-                        <span id="imperial-date" class="font-extrabold text-amber-200">۴ آبان ۲۵۸۵ شاهنشاهی</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-slate-300">
-                        <div class="flex items-center gap-1">
-                            <span class="text-[10px] text-sky-400 font-bold">خورشیدی:</span>
-                            <span id="persian-date" class="font-semibold text-white">۴ آبان ۱۴۰۵</span>
-                        </div>
-                        <span class="text-slate-600">|</span>
-                        <div class="flex items-center gap-1" dir="ltr">
-                            <span id="gregorian-date" class="font-mono text-[11px] text-slate-300">26 Oct 2026</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div>
+          <div class="brand-title">
+            خبرخوان
+            <span class="brand-badge">نسخه تلویزیون هوشمند</span>
+          </div>
+          <div class="brand-sub">پوشش زنده انقلاب ملی، جنگ با جمهوری اسلامی و آزادی ایران</div>
         </div>
+      </div>
+
+      <!-- NAVIGATION TABS -->
+      <nav class="nav-bar">
+        <button class="nav-btn tv-focusable active-tab" data-filter="all" onclick="filterCategory('all', this)">
+          <span>🏠</span> پیشخوان خبر
+        </button>
+        <button class="nav-btn tv-focusable" data-filter="tv" onclick="filterCategory('tv', this)">
+          <span>📺</span> تلویزیون زنده
+        </button>
+        <button class="nav-btn tv-focusable" data-filter="telegram" onclick="filterCategory('telegram', this)">
+          <span>✈️</span> کانال‌های تلگرام
+        </button>
+        <button class="nav-btn tv-focusable" data-filter="youtube" onclick="filterCategory('youtube', this)">
+          <span>▶️</span> یوتیوب و تحلیل
+        </button>
+        <button class="nav-btn tv-focusable" id="sync-btn" onclick="syncLiveTelegram()">
+          <span>🔄</span> دریافت زنده
+        </button>
+      </nav>
+
+      <!-- 3 CALENDARS + CLOCK -->
+      <div class="dates-cluster">
+        <div class="cal-pills">
+          <div class="cal-row">
+            <span id="cal-imperial" class="cal-badge cal-imperial">۲۵۸۵ شاهنشاهی</span>
+            <span id="cal-solar" class="cal-badge cal-solar">۱۴۰۵ خورشیدی</span>
+          </div>
+          <div class="cal-row">
+            <span id="cal-greg" class="cal-badge cal-greg">2026</span>
+          </div>
+        </div>
+        <div id="live-clock" class="clock-box">00:00:00</div>
+      </div>
     </header>
 
-    <!-- MAIN TV WORKSPACE (Sidebar + Dynamic View) -->
-    <div class="flex flex-1 overflow-hidden relative">
-
-        <!-- RIGHT SIDEBAR NAVIGATION (Android TV Leanback Drawer) -->
-        <aside class="w-64 bg-slate-950/90 border-l border-slate-800/80 p-4 flex flex-col justify-between shrink-0 z-20">
-            <nav class="space-y-2" id="tv-sidebar">
-                <div class="text-[11px] font-bold text-slate-500 px-3 mb-2 uppercase tracking-wider">منوی تلویزیون (کنترل با جهت‌نما)</div>
-                
-                <button onclick="switchTab('home')" data-tab="home" tabindex="0" class="tv-focusable tv-nav-item tv-focused w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-bold text-sm text-white bg-slate-800/60">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-house-signal text-amber-400 text-lg w-6 text-center"></i>
-                        <span>پیشخوان انقلاب ملی</span>
-                    </div>
-                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                </button>
-
-                <button onclick="switchTab('livetv')" data-tab="livetv" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-tv text-red-500 text-lg w-6 text-center"></i>
-                        <span>پخش زنده شبکه‌ها</span>
-                    </div>
-                    <span id="live-count-badge" class="text-[10px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span> ۷ زنده
-                    </span>
-                </button>
-
-                <button onclick="switchTab('telegram')" data-tab="telegram" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-brands fa-telegram text-sky-400 text-xl w-6 text-center"></i>
-                        <span>اخبار کانال‌های تلگرام</span>
-                    </div>
-                    <span id="tg-count-badge" class="text-[11px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full">۸</span>
-                </button>
-
-                <button onclick="switchTab('youtube')" data-tab="youtube" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-brands fa-youtube text-rose-500 text-xl w-6 text-center"></i>
-                        <span>یوتیوب و تحلیلگران</span>
-                    </div>
-                    <span id="yt-count-badge" class="text-[11px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full">۸</span>
-                </button>
-
-                <button onclick="switchTab('sources')" data-tab="sources" tabindex="0" class="tv-focusable tv-nav-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-right font-semibold text-sm text-slate-300 hover:text-white">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-sliders text-amber-400 text-lg w-6 text-center"></i>
-                        <span>مدیریت کانال‌ها و منابع</span>
-                    </div>
-                </button>
-            </nav>
-
-            <!-- Active Feeds Status Box -->
-            <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3.5 space-y-2.5">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-400 font-medium">وضعیت فیدهای خبری</span>
-                    <span id="feed-status-indicator" class="text-emerald-400 font-bold flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> متصل و بروز
-                    </span>
-                </div>
-                <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
-                    <div class="bg-slate-950/90 p-1.5 rounded-lg border border-slate-800">
-                        <div class="text-red-400 font-bold">۷ شبکه</div>
-                        <div class="text-slate-500 text-[10px]">پخش زنده</div>
-                    </div>
-                    <div class="bg-slate-950/90 p-1.5 rounded-lg border border-slate-800">
-                        <div class="text-sky-400 font-bold">۶ کانال</div>
-                        <div class="text-slate-500 text-[10px]">تلگرام</div>
-                    </div>
-                    <div class="bg-slate-950/90 p-1.5 rounded-lg border border-slate-800">
-                        <div class="text-rose-400 font-bold">۶ کانال</div>
-                        <div class="text-slate-500 text-[10px]">یوتیوب</div>
-                    </div>
-                </div>
-                <div class="text-[10px] text-slate-400 leading-relaxed text-center pt-1 border-t border-slate-800">
-                    از کلیدهای جهت‌نمای کیبورد <kbd class="bg-slate-800 px-1.5 py-0.5 rounded text-sky-300">↑↓←→</kbd> یا کنترل گوشه تصویر استفاده کنید.
-                </div>
+    <!-- MAIN WORKSPACE -->
+    <div class="workspace">
+      <!-- RIGHT: LIVE TV DOCK & CHANNELS -->
+      <aside class="live-column">
+        <div class="mini-player-card tv-focusable" onclick="openFullscreenCurrentTV()">
+          <div class="mini-screen" id="mini-player-container">
+            <div class="live-pill">
+              <span class="live-dot"></span>
+              <span id="mini-live-badge">پخش زنده</span>
             </div>
-        </aside>
+            <div class="mini-screen-art" id="mini-art">
+              <div style="font-size: 44px; margin-bottom: 8px;" id="mini-icon">🦁</div>
+              <div style="font-size: 18px; font-weight: 900; color: #fff;" id="mini-title">شبکه انقلاب ملی شیر و خورشید</div>
+              <div style="font-size: 12px; color: #fbbf24; margin-top: 4px;" id="mini-desc">برای تماشای تمام‌صفحه دکمه OK را بزنید</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 6px;">
+            <span style="font-size: 13px; font-weight: bold; color: #38bdf8;">🎬 بزرگ‌نمایی پخش زنده (OK)</span>
+            <div class="eq-bars">
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+            </div>
+          </div>
+        </div>
 
-        <!-- MAIN CONTENT VIEWPORT -->
-        <main id="main-viewport" class="flex-1 overflow-y-auto p-6 space-y-7 scroll-smooth">
+        <div class="channel-list-box" id="tv-channel-list">
+          <div class="section-head">
+            <span>📡 شبکه‌های زنده تلویزیونی</span>
+            <span style="font-size: 11px; color: #94a3b8;">۷ شبکه فعال</span>
+          </div>
+          <!-- Populated by JS -->
+        </div>
+      </aside>
 
-            <!-- ======================= TAB 1: HOME DASHBOARD ======================= -->
-            <section id="tab-home" class="space-y-7">
-                
-                <!-- Top Hero Row: Featured National Revolution Live Stream + Quick Channels -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                    
-                    <!-- Featured Live Channel Quick Card (7 cols) -->
-                    <div onclick="openLivePlayer(0)" tabindex="0" class="tv-focusable lg:col-span-7 bg-gradient-to-br from-slate-900 via-amber-950/40 to-red-950/50 rounded-3xl border border-amber-500/30 overflow-hidden shadow-2xl cursor-pointer group relative min-h-[265px] flex flex-col justify-between p-6">
-                        <div class="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
-                        
-                        <div class="relative z-10 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="bg-red-600 text-white text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-lg shadow-red-600/40">
-                                    <span class="w-2 h-2 rounded-full bg-white live-dot"></span> پخش زنده ویژه انقلاب ملی
-                                </span>
-                                <span class="bg-amber-500/20 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-400/30 font-bold">۱۰۸۰p Full HD</span>
-                            </div>
-                            <span class="text-xs text-amber-300 bg-amber-500/10 border border-amber-400/20 px-3 py-1 rounded-full">کلیک یا Enter برای تماشای تمام‌صفحه</span>
-                        </div>
+      <!-- LEFT: GRAPHICAL FEED -->
+      <main class="feed-column" id="main-feed">
+        <!-- Hero Spotlight -->
+        <div class="hero-banner tv-focusable" onclick="openNewsModal(0)">
+          <div>
+            <span class="hero-tag">🔥 سرخط ویژه نبرد آزادی</span>
+            <div class="hero-title" id="hero-title">پیام راهبردی شاهزاده رضا پهلوی: هماهنگی کامل نیروهای ملی و خیزش سراسری برای بازپس‌گیری ایران</div>
+            <div class="hero-desc" id="hero-desc">پوشش لحظه‌به‌لحظه تحولات نظامی، سیاسی و میدانی از کانال‌های رسمی شاهزاده رضا پهلوی، فرزاد زرین، آرش اعلایی، ایران اینترنشنال و صدای آمریکا (VOA).</div>
+          </div>
+          <div style="font-size: 54px; flex-shrink: 0;">☀️🦁</div>
+        </div>
 
-                        <div class="relative z-10 my-4 flex items-center gap-5">
-                            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 via-yellow-600 to-red-700 flex flex-col items-center justify-center text-white font-black shadow-xl shrink-0 border border-amber-300/40">
-                                <i class="fa-solid fa-sun text-2xl mb-1"></i>
-                                <span class="text-[10px] leading-none">شیر و خورشید</span>
-                            </div>
-                            <div>
-                                <h2 class="text-2xl font-black text-white group-hover:text-amber-300 transition-colors">شبکه انقلاب ملی شیر و خورشید (پخش زنده ۲۴ ساعته)</h2>
-                                <p class="text-sm text-slate-200 mt-1.5 line-clamp-2 leading-relaxed">پوشش لحظه‌به‌لحظه خیزش سراسری، پیام‌های شاهزاده رضا پهلوی، عملیات‌ها و تحولات جنگ با جمهوری اسلامی و برنامه‌های بازپس‌گیری و آزادی ایران.</p>
-                            </div>
-                        </div>
+        <!-- Dynamic Cards Grid -->
+        <div class="cards-grid" id="cards-grid">
+          <!-- Populated by JS -->
+        </div>
+      </main>
+    </div>
+  </div>
 
-                        <div class="relative z-10 flex items-center justify-between pt-3 border-t border-slate-800/90 text-xs text-slate-300">
-                            <div class="flex items-center gap-4">
-                                <span><i class="fa-solid fa-signal text-emerald-400 ml-1"></i> پخش مستقیم ماهواره‌ای و اینترنتی</span>
-                                <span><i class="fa-solid fa-bolt text-amber-400 ml-1"></i> اتاق خبر جنگ و خیزش ملی</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-amber-400 font-bold">
-                                <span>تماشای زنده شبکه</span>
-                                <i class="fa-solid fa-circle-play text-lg"></i>
-                            </div>
-                        </div>
-                    </div>
+  <!-- BOTTOM BREAKING TICKER + REMOTE GUIDE -->
+  <footer class="bottom-bar">
+    <div class="ticker-label">
+      <span class="live-dot"></span>
+      خبر فوری
+    </div>
+    <div class="ticker-track">
+      <div class="ticker-content" id="ticker-text">
+        ⚡ پوشش زنده در خبرخوان: کانال رسمی شاهزاده رضا پهلوی (t.me/rezapahlavi_officiall) و ستاد ارتباطات (t.me/rezapahlavicomms) • اتاق خبر جنگ و تحلیل‌های فرزاد زرین (t.me/farzadzarrin) • تحلیل‌های نظامی آرش اعلایی • پخش زنده شبکه‌های ایران اینترنشنال، صدای آمریکا VOA فارسی، انقلاب ملی شیر و خورشید و فاکس نیوز...
+      </div>
+    </div>
+    <div class="remote-hints">
+      <span><span class="key-badge">◀ ▶ ▲ ▼</span> حرکت</span>
+      <span><span class="key-badge">OK</span> انتخاب و پخش</span>
+      <span><span class="key-badge">Back</span> بازگشت</span>
+    </div>
+  </footer>
 
-                    <!-- Instant Multi-Channel Switcher (5 cols) -->
-                    <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-extrabold text-base text-white flex items-center gap-2">
-                                <i class="fa-solid fa-satellite-dish text-red-500"></i>
-                                <span>پخش زنده شبکه‌های خبری</span>
-                            </h3>
-                            <button onclick="switchTab('livetv')" tabindex="0" class="tv-focusable text-xs text-sky-400 hover:underline px-2 py-1 rounded-lg">همه ۷ شبکه ←</button>
-                        </div>
+  <!-- FULLSCREEN MODAL -->
+  <div class="tv-modal" id="app-modal">
+    <div class="modal-top">
+      <div>
+        <div style="font-size: 22px; font-weight: 900; color: #fff;" id="modal-title">پخش زنده</div>
+        <div style="font-size: 13px; color: #fbbf24;" id="modal-subtitle">در حال پخش</div>
+      </div>
+      <button class="modal-close-btn tv-focusable" id="modal-close-btn" onclick="closeModal()">
+        ✖ بستن (Back)
+      </button>
+    </div>
+    <div class="player-stage" id="modal-player-box" style="display: none;"></div>
+    <div class="news-stage" id="modal-news-box" style="display: none;"></div>
+  </div>
 
-                        <div id="home-quick-channels" class="grid grid-cols-2 gap-2.5 flex-1">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
+  <script>
+    // ==========================================
+    // 1. DATA: CHANNELS, TELEGRAM & YOUTUBE
+    // ==========================================
+    const tvChannels = [
+      {
+        id: 'lion-sun',
+        name: 'شبکه انقلاب ملی شیر و خورشید',
+        badge: 'ویژه انقلاب ملی',
+        icon: '🦁',
+        color: 'linear-gradient(135deg, #d97706, #059669)',
+        desc: 'پخش زنده سخنرانی‌ها، فراخوان‌ها و گزارش‌های میدانی بازپس‌گیری ایران',
+        ytChannelSearch: 'Reza Pahlavi Official Iran International Live',
+        streamUrl: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8'
+      },
+      {
+        id: 'iran-intl',
+        name: 'ایران اینترنشنال (Iran Int\'l)',
+        badge: 'پخش زنده ۲۴ ساعته',
+        icon: '🔴',
+        color: 'linear-gradient(135deg, #dc2626, #7f1d1d)',
+        desc: 'پوشش لحظه‌به‌لحظه اخبار جنگ با جمهوری اسلامی و تحولات منطقه',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCat6bC0Wrqq9Bcq7EkH_yQw&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'voa-farsi',
+        name: 'صدای آمریکا (VOA Farsi)',
+        badge: 'پخش زنده خبری',
+        icon: '🗽',
+        color: 'linear-gradient(135deg, #2563eb, #1e3a8a)',
+        desc: 'واکنش‌های کاخ سفید، کنگره آمریکا و تحلیل‌های بین‌المللی آزادی ایران',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCttfDeGMwUxPjnlsKagcwKw&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'fox-news',
+        name: 'فاکس نیوز (Fox News Live)',
+        badge: 'انگلیسی • جهانی',
+        icon: '🇺🇸',
+        color: 'linear-gradient(135deg, #1d4ed8, #991b1b)',
+        desc: 'پوشش ویژه اتاق جنگ و تصمیمات نظامی ایالات متحده علیه رژیم',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCXIJgqnII2ZOINSWNOGFThA&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'bbc-persian',
+        name: 'بی‌بی‌سی فارسی (BBC)',
+        badge: 'پخش زنده',
+        icon: '🌐',
+        color: 'linear-gradient(135deg, #991b1b, #450a0a)',
+        desc: 'بخش‌های خبری و گزارش‌های بین‌المللی',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCHZk9MrT3DGWmVqdsj5y0EA&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'irib-khabar',
+        name: 'شبکه خبر صدا و سیما (رصد)',
+        badge: 'مانیتورینگ رژیم',
+        icon: '📡',
+        color: 'linear-gradient(135deg, #475569, #1e293b)',
+        desc: 'رصد مواضع و واکنش‌های رسانه‌ای درون ساختار حکومت',
+        streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+      }
+    ];
+
+    let feedItems = [
+      {
+        type: 'telegram',
+        source: 'کانال رسمی شاهزاده رضا پهلوی',
+        handle: 't.me/rezapahlavi_officiall',
+        icon: '👑',
+        gradient: 'linear-gradient(135deg, #b45309 0%, #065f46 100%)',
+        time: 'لحظاتی پیش',
+        title: 'پیام شاهزاده رضا پهلوی به مردم ایران و نیروهای مسلح: زمان انتخاب تاریخی برای نجات و آزادی ایران فرا رسیده است',
+        body: 'هم‌میهنان عزیزم، رژیم جمهوری اسلامی در ضعیف‌ترین و شکننده‌ترین نقطه تاریخ خود قرار گرفته است. اتحاد ملی زیر پرچم شیر و خورشید و هماهنگی میان نیروهای داخل و خارج کشور، کلید پیروزی نهایی و بازپس‌گیری ایران است.\n\nمنبع: کانال تلگرام رسمی شاهزاده رضا پهلوی (t.me/rezapahlavi_officiall)'
+      },
+      {
+        type: 'telegram',
+        source: 'ستاد ارتباطات شاهزاده رضا پهلوی',
+        handle: 't.me/rezapahlavicomms',
+        icon: '🏛️',
+        gradient: 'linear-gradient(135deg, #1e40af 0%, #0f172a 100%)',
+        time: '۱۰ دقیقه پیش',
+        title: 'گزارش دیدارها و رایزنی‌های بین‌المللی شاهزاده رضا پهلوی با رهبران و سیاست‌گذاران ارشد جهانی جهت حمایت از انقلاب ملی',
+        body: 'ستاد ارتباطات شاهزاده رضا پهلوی جزئیات نشست‌های راهبردی اخیر برای افزایش فشار حداکثری، فلج کردن ماشین سرکوب و پشتیبانی همه‌جانبه از خیزش مردم ایران برای سرنگونی جمهوری اسلامی را منتشر کرد.\n\nمنبع: t.me/rezapahlavicomms'
+      },
+      {
+        type: 'telegram',
+        source: 'کانال رسمی فرزاد زرین',
+        handle: 't.me/farzadzarrin',
+        icon: '🎙️',
+        gradient: 'linear-gradient(135deg, #991b1b 0%, #31102f 100%)',
+        time: '۱۵ دقیقه پیش',
+        title: 'فرزاد زرین: گزارش فوری از اتاق جنگ، ضربات سنگین به مراکز فرماندهی رژیم و وحشت در رأس هرم قدرت',
+        body: 'بررسی آخرین تحولات میدانی و نظامی علیه مواضع سپاه پاسداران و مراکز راهبردی جمهوری اسلامی. گزارش‌های دریافتی نشان‌دهنده فروپاشی روحیه نیروهای سرکوبگر و گسترش موج همبستگی ملی در شهرهای مختلف ایران است.\n\nمنبع: کانال تلگرام فرزاد زرین (t.me/farzadzarrin)'
+      },
+      {
+        type: 'youtube',
+        source: 'یوتیوب شاهزاده رضا پهلوی',
+        handle: '@OfficialRezaPahlavi',
+        icon: '☀️',
+        gradient: 'linear-gradient(135deg, #d97706 0%, #1e293b 100%)',
+        time: 'ویدیوی ویژه',
+        title: 'سخنرانی کامل و نقشه راه دوران گذار، بازپس‌گیری ایران و استقرار دموکراسی سکولار بر پایه حقوق بشر',
+        body: 'پخش ویدیو و متن کامل سخنرانی شاهزاده رضا پهلوی درباره ساختار دوران گذار، حفظ تمامیت ارضی ایران، بازسازی اقتصادی و محاکمه آمران و عاملان جنایت علیه ملت ایران.',
+        ytQuery: 'Reza Pahlavi speech Iran'
+      },
+      {
+        type: 'youtube',
+        source: 'یوتیوب آرش اعلایی (Arash Alaee)',
+        handle: '@ArashAlaee',
+        icon: '🎯',
+        gradient: 'linear-gradient(135deg, #0f766e 0%, #0f172a 100%)',
+        time: 'تحلیل نظامی',
+        title: 'تحلیل استراتژیک آرش اعلایی: سناریوهای عملیات نظامی، فلج شدن پدافند جمهوری اسلامی و توازن قوا',
+        body: 'در این برنامه تحلیلی، آرش اعلایی ابعاد نظامی و ژئوپلیتیک درگیری‌های جاری، نقاط ضعف بحرانی ساختار نظامی رژیم و پیامدهای راهبردی آن برای تسریع آزادی ایران را کالبدشکافی می‌کند.',
+        ytQuery: 'Arash Alaee Iran'
+      },
+      {
+        type: 'youtube',
+        source: 'یوتیوب فرزاد زرین (Farzad Zarrin)',
+        handle: '@FarzadZarrin',
+        icon: '🔥',
+        gradient: 'linear-gradient(135deg, #be123c 0%, #1e1b4b 100%)',
+        time: 'برنامه زنده',
+        title: 'ویژه‌برنامه زنده فرزاد زرین: بررسی پشت‌پرده تحولات ساعات اخیر و پیام‌های مردمی از سراسر ایران',
+        body: 'پوشش زنده اخبار جنگ با جمهوری اسلامی، ارتباط با مخاطبان و تحلیل گام‌های بعدی انقلاب ملی شیر و خورشید تا پیروزی نهایی.',
+        ytQuery: 'Farzad Zarrin'
+      },
+      {
+        type: 'telegram',
+        source: 'تلگرام صدای آمریکا (VOA Farsi)',
+        handle: 't.me/farsivoa',
+        icon: '🗽',
+        gradient: 'linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%)',
+        time: '۲۵ دقیقه پیش',
+        title: 'هشدار صریح مقامات ارشد آمریکا و ائتلاف بین‌المللی به سران جمهوری اسلامی درباره پیامدهای ماجراجویی نظامی',
+        body: 'گزارش اختصاصی صدای آمریکا از تصمیمات جدید واشنگتن و متحدان برای مهار کامل تهدیدات رژیم و حمایت از خواست مردم ایران برای تغییر رژیم.',
+      },
+      {
+        type: 'telegram',
+        source: 'تلگرام ایران اینترنشنال',
+        handle: 't.me/iranintltv',
+        icon: '🚨',
+        gradient: 'linear-gradient(135deg, #b91c1c 0%, #111827 100%)',
+        time: '۳۰ دقیقه پیش',
+        title: 'گزارش‌های مردمی از شعارهای شبانه و گسترش نافرمانی مدنی در تهران، کرج، شیراز، اصفهان و مشهد',
+        body: 'ویدیوها و گزارش‌های ارسالی شهروندان نشان می‌دهد که علی‌رغم فضای امنیتی، فریادهای آزادی‌خواهی و شعارهای ملی در شهرهای مختلف کشور طنین‌انداز شده است.'
+      },
+      {
+        type: 'youtube',
+        source: 'رسانه انقلاب ملی شیر و خورشید',
+        handle: 'National Revolution TV',
+        icon: '🦁',
+        gradient: 'linear-gradient(135deg, #047857 0%, #b45309 100%)',
+        time: 'مستند ویژه',
+        title: 'خیزش ملی تا پیروزی: همبستگی ایرانیان داخل و خارج از کشور زیر پرچم سه رنگ شیر و خورشید',
+        body: 'مجموعه گزارش‌های تصویری از گردهمایی‌های بزرگ جهانی ایرانیان و هماهنگی با شبکه‌های مبارزاتی داخل کشور برای بازپس‌گیری ایران.'
+      }
+    ];
+
+    let activeChannelIndex = 0;
+    let currentFilter = 'all';
+    let focusedElement = null;
+
+    // ==========================================
+    // 2. THREE CALENDARS (SHAHANSHAHI, SOLAR, GREGORIAN)
+    // ==========================================
+    function toPersianNum(str) {
+      const p = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+      return String(str).replace(/\d/g, d => p[d]);
+    }
+
+    function updateClocksAndCalendars() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('live-clock').textContent = `${hh}:${mm}:${ss}`;
+
+      try {
+        // Solar Hijri via Intl
+        const parts = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).formatToParts(now);
+
+        let day = '', month = '', yearStr = '', weekday = '';
+        parts.forEach(p => {
+          if (p.type === 'day') day = p.value;
+          if (p.type === 'month') month = p.value;
+          if (p.type === 'year') yearStr = p.value;
+          if (p.type === 'weekday') weekday = p.value;
+        });
+
+        const latinYear = parseInt(yearStr.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)), 10);
+        const shahanshahiYear = !isNaN(latinYear) ? toPersianNum(latinYear + 1180) : '۲۵۸۵';
+
+        document.getElementById('cal-imperial').textContent = `👑 ${day} ${month} ${shahanshahiYear} شاهنشاهی`;
+        document.getElementById('cal-solar').textContent = `☀️ ${weekday} ${day} ${month} ${yearStr}`;
+
+        const greg = new Intl.DateTimeFormat('en-US', {
+          weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+        }).format(now);
+        document.getElementById('cal-greg').textContent = `🌍 ${greg}`;
+      } catch (e) {}
+    }
+
+    // ==========================================
+    // 3. RENDER CHANNELS & CARDS
+    // ==========================================
+    function renderTVChannelList() {
+      const container = document.getElementById('tv-channel-list');
+      let html = `
+        <div class="section-head">
+          <span>📡 شبکه‌های زنده تلویزیونی</span>
+          <span style="font-size: 11px; color: #94a3b8;">${toPersianNum(tvChannels.length)} شبکه</span>
+        </div>
+      `;
+      tvChannels.forEach((ch, idx) => {
+        const isPlaying = idx === activeChannelIndex;
+        html += `
+          <div class="ch-item tv-focusable ${isPlaying ? 'playing' : ''}" onclick="selectChannel(${idx})">
+            <div class="ch-info">
+              <div class="ch-icon" style="background: ${ch.color};">${ch.icon}</div>
+              <div>
+                <div style="font-size: 13px; font-weight: bold; color: #fff;">${ch.name}</div>
+                <div style="font-size: 11px; color: #94a3b8;">${ch.badge}</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: ${isPlaying ? '#fbbf24' : '#38bdf8'}; font-weight: bold;">
+              ${isPlaying ? '● روی آنتن' : 'پخش ◀'}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function selectChannel(idx) {
+      activeChannelIndex = idx;
+      const ch = tvChannels[idx];
+      document.getElementById('mini-icon').textContent = ch.icon;
+      document.getElementById('mini-title').textContent = ch.name;
+      document.getElementById('mini-desc').textContent = ch.desc;
+      document.getElementById('mini-live-badge').textContent = ch.badge;
+      renderTVChannelList();
+      openFullscreenCurrentTV();
+    }
+
+    function renderFeedGrid() {
+      const grid = document.getElementById('cards-grid');
+      let html = '';
+
+      if (currentFilter === 'tv') {
+        tvChannels.forEach((ch, idx) => {
+          html += `
+            <div class="media-card tv-focusable" onclick="selectChannel(${idx})">
+              <div class="card-visual" style="background: ${ch.color};">
+                <span class="card-badge">📺 پخش زنده</span>
+                <div class="card-avatar">${ch.icon}</div>
+              </div>
+              <div class="card-body">
+                <div class="card-source">
+                  <span>${ch.badge}</span>
+                  <span style="color:#ef4444;">● LIVE</span>
                 </div>
-
-                <!-- Row 2: Highlighted Telegram Channels Banner + Latest Posts -->
-                <div class="space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex items-center gap-2.5">
-                            <i class="fa-brands fa-telegram text-sky-400 text-2xl"></i>
-                            <h3 class="text-lg font-extrabold text-white">آخرین پیام‌ها و خبرهای کانال‌های تلگرام</h3>
-                            <div class="hidden xl:flex items-center gap-1.5 text-[11px]">
-                                <span class="bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-full font-mono" dir="ltr">@rezapahlavi_officiall</span>
-                                <span class="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2.5 py-0.5 rounded-full font-mono" dir="ltr">@rezapahlavicomms</span>
-                                <span class="bg-rose-500/20 text-rose-300 border border-rose-400/30 px-2.5 py-0.5 rounded-full font-mono" dir="ltr">@farzadzarrin</span>
-                            </div>
-                        </div>
-                        <button onclick="switchTab('telegram')" tabindex="0" class="tv-focusable bg-slate-800/80 hover:bg-slate-700 text-xs text-sky-300 px-3.5 py-1.5 rounded-xl font-semibold">
-                            مشاهده همه کانال‌های تلگرام ←
-                        </button>
-                    </div>
-                    <div id="home-telegram-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Populated by JS -->
-                    </div>
+                <div class="card-title">${ch.name}</div>
+                <div class="card-footer">
+                  <span>تماشای مستقیم با کیفیت بالا</span>
+                  <span style="color:#38bdf8; font-weight:bold;">پخش با OK ◀</span>
                 </div>
+              </div>
+            </div>
+          `;
+        });
+        grid.innerHTML = html;
+        return;
+      }
 
-                <!-- Row 3: Latest YouTube Video Reports (Reza Pahlavi, Arash Alaee, Farzad Zarrin, etc.) -->
-                <div class="space-y-3 pb-6">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex items-center gap-2.5">
-                            <i class="fa-brands fa-youtube text-rose-500 text-2xl"></i>
-                            <h3 class="text-lg font-extrabold text-white">جدیدترین ویدیوها و تحلیل‌های یوتیوب</h3>
-                            <span class="text-xs text-slate-400">(شاهزاده رضا پهلوی • آرش اعلایی • فرزاد زرین • تحلیلگران جنگ و انقلاب ملی)</span>
-                        </div>
-                        <button onclick="switchTab('youtube')" tabindex="0" class="tv-focusable bg-slate-800/80 hover:bg-slate-700 text-xs text-rose-300 px-3.5 py-1.5 rounded-xl font-semibold">
-                            همه ویدیوهای یوتیوب ←
-                        </button>
-                    </div>
-                    <div id="home-youtube-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Populated by JS -->
-                    </div>
+      feedItems.forEach((item, idx) => {
+        if (currentFilter !== 'all' && item.type !== currentFilter) return;
+        const typeLabel = item.type === 'telegram' ? '✈️ تلگرام' : '▶️ یوتیوب';
+        html += `
+          <div class="media-card tv-focusable" onclick="openNewsModal(${idx})">
+            <div class="card-visual" style="background: ${item.gradient};">
+              <span class="card-badge">${typeLabel}</span>
+              <div class="card-avatar">${item.icon}</div>
+            </div>
+            <div class="card-body">
+              <div class="card-source">
+                <span>${item.source}</span>
+                <span>${item.time}</span>
+              </div>
+              <div class="card-title">${item.title}</div>
+              <div class="card-footer">
+                <span style="direction:ltr;">${item.handle}</span>
+                <span style="color:#fbbf24; font-weight:bold;">مشاهده کامل ◀</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function filterCategory(cat, btnEl) {
+      currentFilter = cat;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
+      if (btnEl) btnEl.classList.add('active-tab');
+      renderFeedGrid();
+    }
+
+    // ==========================================
+    // 4. MODAL PLAYER & NEWS VIEWER
+    // ==========================================
+    function openFullscreenCurrentTV() {
+      const ch = tvChannels[activeChannelIndex];
+      const modal = document.getElementById('app-modal');
+      const playerBox = document.getElementById('modal-player-box');
+      const newsBox = document.getElementById('modal-news-box');
+
+      document.getElementById('modal-title').textContent = `📺 ${ch.name}`;
+      document.getElementById('modal-subtitle').textContent = ch.desc;
+
+      newsBox.style.display = 'none';
+      playerBox.style.display = 'flex';
+
+      if (ch.ytEmbed) {
+        playerBox.innerHTML = `
+          <iframe src="${ch.ytEmbed}" style="width:100%; height:100%; border:none;" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+        `;
+      } else {
+        playerBox.innerHTML = `
+          <div style="text-align:center; padding: 30px;">
+            <div style="font-size: 64px; margin-bottom: 14px;">${ch.icon}</div>
+            <div style="font-size: 24px; font-weight:900; color:#fff; margin-bottom:10px;">${ch.name}</div>
+            <div style="font-size: 16px; color:#cbd5e1; margin-bottom:20px;">${ch.desc}</div>
+            <video src="${ch.streamUrl}" controls autoplay style="width: 80%; max-height: 360px; border-radius: 14px; border: 2px solid #f59e0b; background:#000;"></video>
+          </div>
+        `;
+      }
+
+      modal.classList.add('open');
+      setFocus(document.getElementById('modal-close-btn'));
+    }
+
+    function openNewsModal(idx) {
+      const item = feedItems[idx] || feedItems[0];
+      const modal = document.getElementById('app-modal');
+      const playerBox = document.getElementById('modal-player-box');
+      const newsBox = document.getElementById('modal-news-box');
+
+      document.getElementById('modal-title').textContent = `${item.icon} ${item.source}`;
+      document.getElementById('modal-subtitle').textContent = `${item.handle} • ${item.time}`;
+
+      playerBox.style.display = 'none';
+      playerBox.innerHTML = '';
+      newsBox.style.display = 'block';
+
+      newsBox.innerHTML = `
+        <div style="font-size: 24px; font-weight: 900; color: #fbbf24; margin-bottom: 18px; line-height: 1.5;">
+          ${item.title}
+        </div>
+        <div style="white-space: pre-line; font-size: 19px; color: #f8fafc; line-height: 2;">
+          ${item.body}
+        </div>
+      `;
+
+      modal.classList.add('open');
+      setFocus(document.getElementById('modal-close-btn'));
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('app-modal');
+      const playerBox = document.getElementById('modal-player-box');
+      playerBox.innerHTML = '';
+      modal.classList.remove('open');
+      const firstNav = document.querySelector('.nav-btn');
+      if (firstNav) setFocus(firstNav);
+    }
+
+    // ==========================================
+    // 5. NON-BLOCKING LIVE TELEGRAM SYNC
+    // ==========================================
+    window.onNativeTelegramData = function(channelHandle, htmlContent) {
+      if (!htmlContent || htmlContent.length < 100) return;
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        const nodes = doc.querySelectorAll('.tgme_widget_message_text');
+        if (nodes && nodes.length > 0) {
+          const latestNode = nodes[nodes.length - 1];
+          const text = latestNode.textContent.trim();
+          if (text.length > 20) {
+            feedItems.unshift({
+              type: 'telegram',
+              source: `بروزرسانی زنده (${channelHandle})`,
+              handle: `t.me/${channelHandle}`,
+              icon: '⚡',
+              gradient: 'linear-gradient(135deg, #059669 0%, #0f172a 100%)',
+              time: 'هم‌اکنون (زنده)',
+              title: text.substring(0, 110) + '...',
+              body: text
+            });
+            renderFeedGrid();
+          }
+        }
+      } catch (e) {}
+    };
+
+    function syncLiveTelegram() {
+      const btn = document.getElementById('sync-btn');
+      btn.innerHTML = '<span>⏳</span> در حال دریافت...';
+      const channels = ['rezapahlavi_officiall', 'rezapahlavicomms', 'farzadzarrin'];
+
+      channels.forEach(ch => {
+        const targetUrl = 'https://t.me/s/' + ch;
+        if (window.AndroidBridge && window.AndroidBridge.fetchTelegramAsync) {
+          window.AndroidBridge.fetchTelegramAsync(ch, targetUrl);
+        } else {
+          fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl))
+            .then(r => r.json())
+            .then(d => {
+              if (d && d.contents) window.onNativeTelegramData(ch, d.contents);
+            })
+            .catch(() => {});
+        }
+      });
+
+      setTimeout(() => {
+        btn.innerHTML = '<span>✅</span> بروزرسانی شد';
+        setTimeout(() => { btn.innerHTML = '<span>🔄</span> دریافت زنده'; }, 2500);
+      }, 1800);
+    }
+
+    // ==========================================
+    // 6. SMART SPATIAL D-PAD REMOTE CONTROLLER
+    // ==========================================
+    function getFocusableElements() {
+      const modal = document.getElementById('app-modal');
+      if (modal.classList.contains('open')) {
+        return Array.from(modal.querySelectorAll('.tv-focusable'));
+      }
+      return Array.from(document.querySelectorAll('.tv-focusable')).filter(el => {
+        return el.offsetParent !== null;
+      });
+    }
+
+    function setFocus(el) {
+      if (!el) return;
+      document.querySelectorAll('.tv-focused').forEach(n => n.classList.remove('tv-focused'));
+      focusedElement = el;
+      el.classList.add('tv-focused');
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function moveFocus(direction) {
+      const list = getFocusableElements();
+      if (!list.length) return;
+      if (!focusedElement || !list.includes(focusedElement)) {
+        setFocus(list[0]);
+        return;
+      }
+
+      const curRect = focusedElement.getBoundingClientRect();
+      const curX = curRect.left + curRect.width / 2;
+      const curY = curRect.top + curRect.height / 2;
+
+      let bestCandidate = null;
+      let bestScore = Infinity;
+
+      list.forEach(candidate => {
+        if (candidate === focusedElement) return;
+        const r = candidate.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+
+        const dx = cx - curX;
+        const dy = cy - curY;
+
+        let valid = false;
+        if (direction === 'left' && dx < -15) valid = true;
+        if (direction === 'right' && dx > 15) valid = true;
+        if (direction === 'up' && dy < -15) valid = true;
+        if (direction === 'down' && dy > 15) valid = true;
+
+        if (valid) {
+          const primaryDist = (direction === 'left' || direction === 'right') ? Math.abs(dx) : Math.abs(dy);
+          const orthoDist = (direction === 'left' || direction === 'right') ? Math.abs(dy) : Math.abs(dx);
+          const score = primaryDist + orthoDist * 2.6;
+          if (score < bestScore) {
+            bestScore = score;
+            bestCandidate = candidate;
+          }
+        }
+      });
+
+      if (bestCandidate) {
+        setFocus(bestCandidate);
+      }
+    }
+
+    window.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('app-modal');
+      if (e.key === 'Escape' || e.key === 'Backspace') {
+        if (modal.classList.contains('open')) {
+          e.preventDefault();
+          closeModal();
+        }
+        return;
+      }
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+        e.preventDefault();
+        if (e.key === 'ArrowLeft') moveFocus('left');
+        else if (e.key === 'ArrowRight') moveFocus('right');
+        else if (e.key === 'ArrowUp') moveFocus('up');
+        else if (e.key === 'ArrowDown') moveFocus('down');
+        else if (e.key === 'Enter' && focusedElement) focusedElement.click();
+      }
+    });
+
+    // INITIALIZE APP IMMEDIATELY (ZERO EXTERNAL DEPENDENCIES)
+    window.onload = function() {
+      updateClocksAndCalendars();
+      setInterval(updateClocksAndCalendars, 1000);
+      renderTVChannelList();
+      renderFeedGrid();
+      const first = document.querySelector('.nav-btn');
+      if (first) setFocus(first);
+    };
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>خبرخوان - تلویزیون هوشمند</title>
+  <style>
+    :root {
+      --bg-deep: #050811;
+      --bg-card: #0f172a;
+      --bg-card-hover: #1e293b;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --cyan: #38bdf8;
+      --emerald: #10b981;
+      --crimson: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
+        linear-gradient(180deg, #050811 0%, #0a1022 100%);
+      color: var(--text-main);
+      font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    }
+
+    /* Smooth GPU-safe Animations */
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+
+    @keyframes eqBar1 { 0%, 100% { height: 6px; } 50% { height: 18px; } }
+    @keyframes eqBar2 { 0%, 100% { height: 18px; } 50% { height: 5px; } }
+    @keyframes eqBar3 { 0%, 100% { height: 10px; } 50% { height: 20px; } }
+
+    @keyframes tickerMove {
+      0% { transform: translate3d(-100%, 0, 0); }
+      100% { transform: translate3d(100%, 0, 0); }
+    }
+
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translate3d(0, 14px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    /* App Layout */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      padding: 18px 28px 54px 28px;
+      justify-content: space-between;
+    }
+
+    /* Top Header */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 18px;
+      padding: 12px 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      flex-shrink: 0;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.4);
+    }
+
+    .brand-logo-inner {
+      width: 100%;
+      height: 100%;
+      background: #090d16;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      color: #000;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--gold-light);
+      margin-top: 3px;
+    }
+
+    /* Navigation Pills */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: rgba(30, 41, 59, 0.85);
+      border: 2px solid rgba(148, 163, 184, 0.2);
+      color: #cbd5e1;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .nav-btn.active-tab {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(16, 185, 129, 0.2));
+      border-color: var(--gold);
+      color: #fff;
+    }
+
+    /* Calendars & Clock Box */
+    .dates-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cal-pills {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .cal-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .cal-badge {
+      padding: 3px 9px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .cal-imperial {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fde68a;
+    }
+
+    .cal-solar {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+
+    .cal-greg {
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #bae6fd;
+      direction: ltr;
+    }
+
+    .clock-box {
+      background: #090e1a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      min-width: 115px;
+      text-align: center;
+    }
+
+    /* Universal TV Focus Highlight */
+    .tv-focusable {
+      outline: none;
+      position: relative;
+    }
+
+    .tv-focused {
+      transform: scale(1.045) translate3d(0, -3px, 0) !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.45), 0 14px 28px rgba(0, 0, 0, 0.75) !important;
+      z-index: 30 !important;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    /* Right Column: Live Monitor & Quick Channels */
+    .live-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .mini-player-card {
+      background: linear-gradient(160deg, #111c35 0%, #0a1020 100%);
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .mini-screen {
+      width: 100%;
+      height: 185px;
+      background: #000;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mini-screen-art {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1e293b 0%, #050811 100%);
+      text-align: center;
+      padding: 12px;
+    }
+
+    .live-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(220, 38, 38, 0.92);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulseDot 1.2s infinite;
+    }
+
+    .eq-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+    }
+    .eq-bar { width: 4px; background: var(--gold); border-radius: 2px; }
+    .eq-bar:nth-child(1) { animation: eqBar1 0.8s infinite; }
+    .eq-bar:nth-child(2) { animation: eqBar2 0.7s infinite; }
+    .eq-bar:nth-child(3) { animation: eqBar3 0.9s infinite; }
+
+    .channel-list-box {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--gold-light);
+      padding: 0 4px 4px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ch-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(30, 41, 59, 0.75);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .ch-item.playing {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(30, 41, 59, 0.9));
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+
+    .ch-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ch-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Left Column: Graphical Cards Feed */
+    .feed-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      overflow-y: auto;
+      padding-left: 6px;
+    }
+
+    .feed-column::-webkit-scrollbar,
+    .channel-list-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    .feed-column::-webkit-scrollbar-thumb,
+    .channel-list-box::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 3px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(125deg, #1e1b4b 0%, #0f172a 45%, #3b0764 100%);
+      border: 2px solid rgba(245, 158, 11, 0.45);
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--crimson);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      font-size: 19px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .hero-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      padding-bottom: 16px;
+    }
+
+    .media-card {
+      background: linear-gradient(180deg, #131c31 0%, #0b1120 100%);
+      border: 2px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      animation: cardEntrance 0.25s ease-out;
+      height: 225px;
+    }
+
+    .card-visual {
+      height: 105px;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      overflow: hidden;
+    }
+
+    .card-badge {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 2;
+    }
+
+    .card-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      z-index: 2;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+    }
+
+    .card-body {
+      padding: 12px 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-source {
+      font-size: 11px;
+      color: var(--gold-light);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #f1f5f9;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 5px 0;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 6px;
+    }
+
+    /* Breaking News Ticker Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: #090d16;
+      border-top: 2px solid rgba(245, 158, 11, 0.45);
+      display: flex;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .ticker-label {
+      background: linear-gradient(90deg, #dc2626, #991b1b);
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      height: 100%;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      font-size: 14px;
+      color: #fde68a;
+      font-weight: bold;
+      padding-left: 50px;
+      animation: tickerMove 38s linear infinite;
+    }
+
+    .remote-hints {
+      background: #111827;
+      height: 100%;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 11px;
+      color: #cbd5e1;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    .key-badge {
+      background: #374151;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-left: 4px;
+    }
+
+    /* Fullscreen Modal (Video & News Reader) */
+    .tv-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 17, 0.96);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      padding: 28px 40px;
+    }
+
+    .tv-modal.open {
+      display: flex;
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .modal-close-btn {
+      background: #ef4444;
+      color: #fff;
+      border: 2px solid #fca5a5;
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .player-stage {
+      flex: 1;
+      background: #000;
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .news-stage {
+      flex: 1;
+      background: #0f172a;
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      border-radius: 18px;
+      padding: 28px;
+      overflow-y: auto;
+      line-height: 1.9;
+      font-size: 19px;
+      color: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <!-- HEADER -->
+    <header class="top-header">
+      <div class="brand-box">
+        <div class="brand-logo">
+          <div class="brand-logo-inner">🦁</div>
+        </div>
+        <div>
+          <div class="brand-title">
+            خبرخوان
+            <span class="brand-badge">نسخه تلویزیون هوشمند</span>
+          </div>
+          <div class="brand-sub">پوشش زنده انقلاب ملی، جنگ با جمهوری اسلامی و آزادی ایران</div>
+        </div>
+      </div>
+
+      <!-- NAVIGATION TABS -->
+      <nav class="nav-bar">
+        <button class="nav-btn tv-focusable active-tab" data-filter="all" onclick="filterCategory('all', this)">
+          <span>🏠</span> پیشخوان خبر
+        </button>
+        <button class="nav-btn tv-focusable" data-filter="tv" onclick="filterCategory('tv', this)">
+          <span>📺</span> تلویزیون زنده
+        </button>
+        <button class="nav-btn tv-focusable" data-filter="telegram" onclick="filterCategory('telegram', this)">
+          <span>✈️</span> کانال‌های تلگرام
+        </button>
+        <button class="nav-btn tv-focusable" data-filter="youtube" onclick="filterCategory('youtube', this)">
+          <span>▶️</span> یوتیوب و تحلیل
+        </button>
+        <button class="nav-btn tv-focusable" id="sync-btn" onclick="syncLiveTelegram()">
+          <span>🔄</span> دریافت زنده
+        </button>
+      </nav>
+
+      <!-- 3 CALENDARS + CLOCK -->
+      <div class="dates-cluster">
+        <div class="cal-pills">
+          <div class="cal-row">
+            <span id="cal-imperial" class="cal-badge cal-imperial">۲۵۸۵ شاهنشاهی</span>
+            <span id="cal-solar" class="cal-badge cal-solar">۱۴۰۵ خورشیدی</span>
+          </div>
+          <div class="cal-row">
+            <span id="cal-greg" class="cal-badge cal-greg">2026</span>
+          </div>
+        </div>
+        <div id="live-clock" class="clock-box">00:00:00</div>
+      </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="workspace">
+      <!-- RIGHT: LIVE TV DOCK & CHANNELS -->
+      <aside class="live-column">
+        <div class="mini-player-card tv-focusable" onclick="openFullscreenCurrentTV()">
+          <div class="mini-screen" id="mini-player-container">
+            <div class="live-pill">
+              <span class="live-dot"></span>
+              <span id="mini-live-badge">پخش زنده</span>
+            </div>
+            <div class="mini-screen-art" id="mini-art">
+              <div style="font-size: 44px; margin-bottom: 8px;" id="mini-icon">🦁</div>
+              <div style="font-size: 18px; font-weight: 900; color: #fff;" id="mini-title">شبکه انقلاب ملی شیر و خورشید</div>
+              <div style="font-size: 12px; color: #fbbf24; margin-top: 4px;" id="mini-desc">برای تماشای تمام‌صفحه دکمه OK را بزنید</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 6px;">
+            <span style="font-size: 13px; font-weight: bold; color: #38bdf8;">🎬 بزرگ‌نمایی پخش زنده (OK)</span>
+            <div class="eq-bars">
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="channel-list-box" id="tv-channel-list">
+          <div class="section-head">
+            <span>📡 شبکه‌های زنده تلویزیونی</span>
+            <span style="font-size: 11px; color: #94a3b8;">۷ شبکه فعال</span>
+          </div>
+          <!-- Populated by JS -->
+        </div>
+      </aside>
+
+      <!-- LEFT: GRAPHICAL FEED -->
+      <main class="feed-column" id="main-feed">
+        <!-- Hero Spotlight -->
+        <div class="hero-banner tv-focusable" onclick="openNewsModal(0)">
+          <div>
+            <span class="hero-tag">🔥 سرخط ویژه نبرد آزادی</span>
+            <div class="hero-title" id="hero-title">پیام راهبردی شاهزاده رضا پهلوی: هماهنگی کامل نیروهای ملی و خیزش سراسری برای بازپس‌گیری ایران</div>
+            <div class="hero-desc" id="hero-desc">پوشش لحظه‌به‌لحظه تحولات نظامی، سیاسی و میدانی از کانال‌های رسمی شاهزاده رضا پهلوی، فرزاد زرین، آرش اعلایی، ایران اینترنشنال و صدای آمریکا (VOA).</div>
+          </div>
+          <div style="font-size: 54px; flex-shrink: 0;">☀️🦁</div>
+        </div>
+
+        <!-- Dynamic Cards Grid -->
+        <div class="cards-grid" id="cards-grid">
+          <!-- Populated by JS -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- BOTTOM BREAKING TICKER + REMOTE GUIDE -->
+  <footer class="bottom-bar">
+    <div class="ticker-label">
+      <span class="live-dot"></span>
+      خبر فوری
+    </div>
+    <div class="ticker-track">
+      <div class="ticker-content" id="ticker-text">
+        ⚡ پوشش زنده در خبرخوان: کانال رسمی شاهزاده رضا پهلوی (t.me/rezapahlavi_officiall) و ستاد ارتباطات (t.me/rezapahlavicomms) • اتاق خبر جنگ و تحلیل‌های فرزاد زرین (t.me/farzadzarrin) • تحلیل‌های نظامی آرش اعلایی • پخش زنده شبکه‌های ایران اینترنشنال، صدای آمریکا VOA فارسی، انقلاب ملی شیر و خورشید و فاکس نیوز...
+      </div>
+    </div>
+    <div class="remote-hints">
+      <span><span class="key-badge">◀ ▶ ▲ ▼</span> حرکت</span>
+      <span><span class="key-badge">OK</span> انتخاب و پخش</span>
+      <span><span class="key-badge">Back</span> بازگشت</span>
+    </div>
+  </footer>
+
+  <!-- FULLSCREEN MODAL -->
+  <div class="tv-modal" id="app-modal">
+    <div class="modal-top">
+      <div>
+        <div style="font-size: 22px; font-weight: 900; color: #fff;" id="modal-title">پخش زنده</div>
+        <div style="font-size: 13px; color: #fbbf24;" id="modal-subtitle">در حال پخش</div>
+      </div>
+      <button class="modal-close-btn tv-focusable" id="modal-close-btn" onclick="closeModal()">
+        ✖ بستن (Back)
+      </button>
+    </div>
+    <div class="player-stage" id="modal-player-box" style="display: none;"></div>
+    <div class="news-stage" id="modal-news-box" style="display: none;"></div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. DATA: CHANNELS, TELEGRAM & YOUTUBE
+    // ==========================================
+    const tvChannels = [
+      {
+        id: 'lion-sun',
+        name: 'شبکه انقلاب ملی شیر و خورشید',
+        badge: 'ویژه انقلاب ملی',
+        icon: '🦁',
+        color: 'linear-gradient(135deg, #d97706, #059669)',
+        desc: 'پخش زنده سخنرانی‌ها، فراخوان‌ها و گزارش‌های میدانی بازپس‌گیری ایران',
+        ytChannelSearch: 'Reza Pahlavi Official Iran International Live',
+        streamUrl: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8'
+      },
+      {
+        id: 'iran-intl',
+        name: 'ایران اینترنشنال (Iran Int\'l)',
+        badge: 'پخش زنده ۲۴ ساعته',
+        icon: '🔴',
+        color: 'linear-gradient(135deg, #dc2626, #7f1d1d)',
+        desc: 'پوشش لحظه‌به‌لحظه اخبار جنگ با جمهوری اسلامی و تحولات منطقه',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCat6bC0Wrqq9Bcq7EkH_yQw&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'voa-farsi',
+        name: 'صدای آمریکا (VOA Farsi)',
+        badge: 'پخش زنده خبری',
+        icon: '🗽',
+        color: 'linear-gradient(135deg, #2563eb, #1e3a8a)',
+        desc: 'واکنش‌های کاخ سفید، کنگره آمریکا و تحلیل‌های بین‌المللی آزادی ایران',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCttfDeGMwUxPjnlsKagcwKw&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'fox-news',
+        name: 'فاکس نیوز (Fox News Live)',
+        badge: 'انگلیسی • جهانی',
+        icon: '🇺🇸',
+        color: 'linear-gradient(135deg, #1d4ed8, #991b1b)',
+        desc: 'پوشش ویژه اتاق جنگ و تصمیمات نظامی ایالات متحده علیه رژیم',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCXIJgqnII2ZOINSWNOGFThA&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'bbc-persian',
+        name: 'بی‌بی‌سی فارسی (BBC)',
+        badge: 'پخش زنده',
+        icon: '🌐',
+        color: 'linear-gradient(135deg, #991b1b, #450a0a)',
+        desc: 'بخش‌های خبری و گزارش‌های بین‌المللی',
+        ytEmbed: 'https://www.youtube.com/embed/live_stream?channel=UCHZk9MrT3DGWmVqdsj5y0EA&autoplay=1',
+        streamUrl: ''
+      },
+      {
+        id: 'irib-khabar',
+        name: 'شبکه خبر صدا و سیما (رصد)',
+        badge: 'مانیتورینگ رژیم',
+        icon: '📡',
+        color: 'linear-gradient(135deg, #475569, #1e293b)',
+        desc: 'رصد مواضع و واکنش‌های رسانه‌ای درون ساختار حکومت',
+        streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+      }
+    ];
+
+    let feedItems = [
+      {
+        type: 'telegram',
+        source: 'کانال رسمی شاهزاده رضا پهلوی',
+        handle: 't.me/rezapahlavi_officiall',
+        icon: '👑',
+        gradient: 'linear-gradient(135deg, #b45309 0%, #065f46 100%)',
+        time: 'لحظاتی پیش',
+        title: 'پیام شاهزاده رضا پهلوی به مردم ایران و نیروهای مسلح: زمان انتخاب تاریخی برای نجات و آزادی ایران فرا رسیده است',
+        body: 'هم‌میهنان عزیزم، رژیم جمهوری اسلامی در ضعیف‌ترین و شکننده‌ترین نقطه تاریخ خود قرار گرفته است. اتحاد ملی زیر پرچم شیر و خورشید و هماهنگی میان نیروهای داخل و خارج کشور، کلید پیروزی نهایی و بازپس‌گیری ایران است.\n\nمنبع: کانال تلگرام رسمی شاهزاده رضا پهلوی (t.me/rezapahlavi_officiall)'
+      },
+      {
+        type: 'telegram',
+        source: 'ستاد ارتباطات شاهزاده رضا پهلوی',
+        handle: 't.me/rezapahlavicomms',
+        icon: '🏛️',
+        gradient: 'linear-gradient(135deg, #1e40af 0%, #0f172a 100%)',
+        time: '۱۰ دقیقه پیش',
+        title: 'گزارش دیدارها و رایزنی‌های بین‌المللی شاهزاده رضا پهلوی با رهبران و سیاست‌گذاران ارشد جهانی جهت حمایت از انقلاب ملی',
+        body: 'ستاد ارتباطات شاهزاده رضا پهلوی جزئیات نشست‌های راهبردی اخیر برای افزایش فشار حداکثری، فلج کردن ماشین سرکوب و پشتیبانی همه‌جانبه از خیزش مردم ایران برای سرنگونی جمهوری اسلامی را منتشر کرد.\n\nمنبع: t.me/rezapahlavicomms'
+      },
+      {
+        type: 'telegram',
+        source: 'کانال رسمی فرزاد زرین',
+        handle: 't.me/farzadzarrin',
+        icon: '🎙️',
+        gradient: 'linear-gradient(135deg, #991b1b 0%, #31102f 100%)',
+        time: '۱۵ دقیقه پیش',
+        title: 'فرزاد زرین: گزارش فوری از اتاق جنگ، ضربات سنگین به مراکز فرماندهی رژیم و وحشت در رأس هرم قدرت',
+        body: 'بررسی آخرین تحولات میدانی و نظامی علیه مواضع سپاه پاسداران و مراکز راهبردی جمهوری اسلامی. گزارش‌های دریافتی نشان‌دهنده فروپاشی روحیه نیروهای سرکوبگر و گسترش موج همبستگی ملی در شهرهای مختلف ایران است.\n\nمنبع: کانال تلگرام فرزاد زرین (t.me/farzadzarrin)'
+      },
+      {
+        type: 'youtube',
+        source: 'یوتیوب شاهزاده رضا پهلوی',
+        handle: '@OfficialRezaPahlavi',
+        icon: '☀️',
+        gradient: 'linear-gradient(135deg, #d97706 0%, #1e293b 100%)',
+        time: 'ویدیوی ویژه',
+        title: 'سخنرانی کامل و نقشه راه دوران گذار، بازپس‌گیری ایران و استقرار دموکراسی سکولار بر پایه حقوق بشر',
+        body: 'پخش ویدیو و متن کامل سخنرانی شاهزاده رضا پهلوی درباره ساختار دوران گذار، حفظ تمامیت ارضی ایران، بازسازی اقتصادی و محاکمه آمران و عاملان جنایت علیه ملت ایران.',
+        ytQuery: 'Reza Pahlavi speech Iran'
+      },
+      {
+        type: 'youtube',
+        source: 'یوتیوب آرش اعلایی (Arash Alaee)',
+        handle: '@ArashAlaee',
+        icon: '🎯',
+        gradient: 'linear-gradient(135deg, #0f766e 0%, #0f172a 100%)',
+        time: 'تحلیل نظامی',
+        title: 'تحلیل استراتژیک آرش اعلایی: سناریوهای عملیات نظامی، فلج شدن پدافند جمهوری اسلامی و توازن قوا',
+        body: 'در این برنامه تحلیلی، آرش اعلایی ابعاد نظامی و ژئوپلیتیک درگیری‌های جاری، نقاط ضعف بحرانی ساختار نظامی رژیم و پیامدهای راهبردی آن برای تسریع آزادی ایران را کالبدشکافی می‌کند.',
+        ytQuery: 'Arash Alaee Iran'
+      },
+      {
+        type: 'youtube',
+        source: 'یوتیوب فرزاد زرین (Farzad Zarrin)',
+        handle: '@FarzadZarrin',
+        icon: '🔥',
+        gradient: 'linear-gradient(135deg, #be123c 0%, #1e1b4b 100%)',
+        time: 'برنامه زنده',
+        title: 'ویژه‌برنامه زنده فرزاد زرین: بررسی پشت‌پرده تحولات ساعات اخیر و پیام‌های مردمی از سراسر ایران',
+        body: 'پوشش زنده اخبار جنگ با جمهوری اسلامی، ارتباط با مخاطبان و تحلیل گام‌های بعدی انقلاب ملی شیر و خورشید تا پیروزی نهایی.',
+        ytQuery: 'Farzad Zarrin'
+      },
+      {
+        type: 'telegram',
+        source: 'تلگرام صدای آمریکا (VOA Farsi)',
+        handle: 't.me/farsivoa',
+        icon: '🗽',
+        gradient: 'linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%)',
+        time: '۲۵ دقیقه پیش',
+        title: 'هشدار صریح مقامات ارشد آمریکا و ائتلاف بین‌المللی به سران جمهوری اسلامی درباره پیامدهای ماجراجویی نظامی',
+        body: 'گزارش اختصاصی صدای آمریکا از تصمیمات جدید واشنگتن و متحدان برای مهار کامل تهدیدات رژیم و حمایت از خواست مردم ایران برای تغییر رژیم.',
+      },
+      {
+        type: 'telegram',
+        source: 'تلگرام ایران اینترنشنال',
+        handle: 't.me/iranintltv',
+        icon: '🚨',
+        gradient: 'linear-gradient(135deg, #b91c1c 0%, #111827 100%)',
+        time: '۳۰ دقیقه پیش',
+        title: 'گزارش‌های مردمی از شعارهای شبانه و گسترش نافرمانی مدنی در تهران، کرج، شیراز، اصفهان و مشهد',
+        body: 'ویدیوها و گزارش‌های ارسالی شهروندان نشان می‌دهد که علی‌رغم فضای امنیتی، فریادهای آزادی‌خواهی و شعارهای ملی در شهرهای مختلف کشور طنین‌انداز شده است.'
+      },
+      {
+        type: 'youtube',
+        source: 'رسانه انقلاب ملی شیر و خورشید',
+        handle: 'National Revolution TV',
+        icon: '🦁',
+        gradient: 'linear-gradient(135deg, #047857 0%, #b45309 100%)',
+        time: 'مستند ویژه',
+        title: 'خیزش ملی تا پیروزی: همبستگی ایرانیان داخل و خارج از کشور زیر پرچم سه رنگ شیر و خورشید',
+        body: 'مجموعه گزارش‌های تصویری از گردهمایی‌های بزرگ جهانی ایرانیان و هماهنگی با شبکه‌های مبارزاتی داخل کشور برای بازپس‌گیری ایران.'
+      }
+    ];
+
+    let activeChannelIndex = 0;
+    let currentFilter = 'all';
+    let focusedElement = null;
+
+    // ==========================================
+    // 2. THREE CALENDARS (SHAHANSHAHI, SOLAR, GREGORIAN)
+    // ==========================================
+    function toPersianNum(str) {
+      const p = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+      return String(str).replace(/\d/g, d => p[d]);
+    }
+
+    function updateClocksAndCalendars() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('live-clock').textContent = `${hh}:${mm}:${ss}`;
+
+      try {
+        // Solar Hijri via Intl
+        const parts = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).formatToParts(now);
+
+        let day = '', month = '', yearStr = '', weekday = '';
+        parts.forEach(p => {
+          if (p.type === 'day') day = p.value;
+          if (p.type === 'month') month = p.value;
+          if (p.type === 'year') yearStr = p.value;
+          if (p.type === 'weekday') weekday = p.value;
+        });
+
+        const latinYear = parseInt(yearStr.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)), 10);
+        const shahanshahiYear = !isNaN(latinYear) ? toPersianNum(latinYear + 1180) : '۲۵۸۵';
+
+        document.getElementById('cal-imperial').textContent = `👑 ${day} ${month} ${shahanshahiYear} شاهنشاهی`;
+        document.getElementById('cal-solar').textContent = `☀️ ${weekday} ${day} ${month} ${yearStr}`;
+
+        const greg = new Intl.DateTimeFormat('en-US', {
+          weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+        }).format(now);
+        document.getElementById('cal-greg').textContent = `🌍 ${greg}`;
+      } catch (e) {}
+    }
+
+    // ==========================================
+    // 3. RENDER CHANNELS & CARDS
+    // ==========================================
+    function renderTVChannelList() {
+      const container = document.getElementById('tv-channel-list');
+      let html = `
+        <div class="section-head">
+          <span>📡 شبکه‌های زنده تلویزیونی</span>
+          <span style="font-size: 11px; color: #94a3b8;">${toPersianNum(tvChannels.length)} شبکه</span>
+        </div>
+      `;
+      tvChannels.forEach((ch, idx) => {
+        const isPlaying = idx === activeChannelIndex;
+        html += `
+          <div class="ch-item tv-focusable ${isPlaying ? 'playing' : ''}" onclick="selectChannel(${idx})">
+            <div class="ch-info">
+              <div class="ch-icon" style="background: ${ch.color};">${ch.icon}</div>
+              <div>
+                <div style="font-size: 13px; font-weight: bold; color: #fff;">${ch.name}</div>
+                <div style="font-size: 11px; color: #94a3b8;">${ch.badge}</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: ${isPlaying ? '#fbbf24' : '#38bdf8'}; font-weight: bold;">
+              ${isPlaying ? '● روی آنتن' : 'پخش ◀'}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function selectChannel(idx) {
+      activeChannelIndex = idx;
+      const ch = tvChannels[idx];
+      document.getElementById('mini-icon').textContent = ch.icon;
+      document.getElementById('mini-title').textContent = ch.name;
+      document.getElementById('mini-desc').textContent = ch.desc;
+      document.getElementById('mini-live-badge').textContent = ch.badge;
+      renderTVChannelList();
+      openFullscreenCurrentTV();
+    }
+
+    function renderFeedGrid() {
+      const grid = document.getElementById('cards-grid');
+      let html = '';
+
+      if (currentFilter === 'tv') {
+        tvChannels.forEach((ch, idx) => {
+          html += `
+            <div class="media-card tv-focusable" onclick="selectChannel(${idx})">
+              <div class="card-visual" style="background: ${ch.color};">
+                <span class="card-badge">📺 پخش زنده</span>
+                <div class="card-avatar">${ch.icon}</div>
+              </div>
+              <div class="card-body">
+                <div class="card-source">
+                  <span>${ch.badge}</span>
+                  <span style="color:#ef4444;">● LIVE</span>
                 </div>
-
-            </section>
-<!-- ... existing code ... -->
-            <!-- ======================= TAB 3: TELEGRAM NEWS FEED ======================= -->
-            <section id="tab-telegram" class="hidden space-y-6 pb-8">
-                <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-5 rounded-3xl">
-                    <div>
-                        <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-                            <i class="fa-brands fa-telegram text-sky-400 text-2xl"></i>
-                            <span>رصد لحظه‌ای کانال‌های تلگرام انقلاب ملی و اخبار جنگ</span>
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-1">شامل کانال رسمی شاهزاده رضا پهلوی، ستاد ارتباطات، فرزاد زرین، ایران اینترنشنال، صدای آمریکا و وحید آنلاین</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="fetchLiveTelegramWebFeeds()" tabindex="0" class="tv-focusable bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow">
-                            <i class="fa-solid fa-cloud-arrow-down"></i>
-                            <span>دریافت آخرین پست‌های زنده از تلگرام</span>
-                        </button>
-                    </div>
+                <div class="card-title">${ch.name}</div>
+                <div class="card-footer">
+                  <span>تماشای مستقیم با کیفیت بالا</span>
+                  <span style="color:#38bdf8; font-weight:bold;">پخش با OK ◀</span>
                 </div>
+              </div>
+            </div>
+          `;
+        });
+        grid.innerHTML = html;
+        return;
+      }
 
-                <!-- Channel Filter Pills -->
-                <div id="telegram-filter-bar" class="flex flex-wrap items-center gap-2">
-                    <!-- Populated by JS -->
-                </div>
+      feedItems.forEach((item, idx) => {
+        if (currentFilter !== 'all' && item.type !== currentFilter) return;
+        const typeLabel = item.type === 'telegram' ? '✈️ تلگرام' : '▶️ یوتیوب';
+        html += `
+          <div class="media-card tv-focusable" onclick="openNewsModal(${idx})">
+            <div class="card-visual" style="background: ${item.gradient};">
+              <span class="card-badge">${typeLabel}</span>
+              <div class="card-avatar">${item.icon}</div>
+            </div>
+            <div class="card-body">
+              <div class="card-source">
+                <span>${item.source}</span>
+                <span>${item.time}</span>
+              </div>
+              <div class="card-title">${item.title}</div>
+              <div class="card-footer">
+                <span style="direction:ltr;">${item.handle}</span>
+                <span style="color:#fbbf24; font-weight:bold;">مشاهده کامل ◀</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
 
-                <div id="telegram-full-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-<!-- ... existing code ... -->
-    <!-- APPLICATION LOGIC -->
-    <script>
-        // =========================================================================
-        // 1. INITIAL DATA: LIVE TV CHANNELS, TELEGRAM FEEDS, YOUTUBE VIDEOS
-        // =========================================================================
-        const liveChannels = [
-            {
-                id: 'shirokhorshid',
-                name: 'شبکه انقلاب ملی شیر و خورشید',
-                enName: 'Lion & Sun National Revolution TV',
-                category: 'رسانه انقلاب ملی و بازپس‌گیری ایران • ۲۴ ساعته',
-                quality: '1080p HD',
-                badgeText: 'شیر و خورشید',
-                gradient: 'from-amber-500 via-yellow-600 to-red-800',
-                currentProgram: 'پوشش زنده خیزش سراسری، بیانیه‌های شاهزاده رضا پهلوی و گزارش عملیات‌های جنگ با جمهوری اسلامی',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            },
-            {
-                id: 'iranintl',
-                name: 'ایران اینترنشنال',
-                enName: 'Iran International TV',
-                category: 'خبری فارسی • پوشش ویژه جنگ و انقلاب',
-                quality: '1080p HD',
-                badgeText: 'IRAN INTL',
-                gradient: 'from-red-600 to-rose-900',
-                currentProgram: 'پوشش زنده تحولات نظامی، سیاسی و ضربات راهبردی به ساختار نظامی جمهوری اسلامی',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            },
-            {
-                id: 'voafarsi',
-                name: 'VOA فارسی (صدای آمریکا)',
-                enName: 'VOA Persian Live',
-                category: 'خبری فارسی • واشنگتن',
-                quality: '1080p HD',
-                badgeText: 'VOA فارسی',
-                gradient: 'from-blue-600 to-indigo-950',
-                currentProgram: 'برنامه ویژه خبری از واشنگتن: مواضع بین‌المللی در قبال آزادی ایران و سرنگونی رژیم',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            },
-            {
-                id: 'foxnews',
-                name: 'فاکس نیوز آمریکا',
-                enName: 'Fox News Channel Live',
-                category: 'خبری بین‌المللی • پوشش نظامی و جهانی',
-                quality: '1080p HD',
-                badgeText: 'FOX NEWS',
-                gradient: 'from-sky-700 to-blue-950',
-                currentProgram: 'Special Report: Military Operations Against the Islamic Republic & Middle East Security',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            },
-            {
-                id: 'bbcpersian',
-                name: 'بی‌بی‌سی فارسی',
-                enName: 'BBC News Persian',
-                category: 'خبری فارسی • لندن',
-                quality: '1080p HD',
-                badgeText: 'BBC فارسی',
-                gradient: 'from-rose-700 to-red-950',
-                currentProgram: 'شصت دقیقه و بررسی بحران‌های عمیق درونی و بین‌المللی جمهوری اسلامی',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            },
-            {
-                id: 'euronews',
-                name: 'یورونیوز فارسی',
-                enName: 'Euronews Persian TV',
-                category: 'خبری اروپا و جهان',
-                quality: '1080p HD',
-                badgeText: 'EURONEWS',
-                gradient: 'from-cyan-600 to-slate-900',
-                currentProgram: 'واکنش اتحادیه اروپا به تحولات ایران، تحریم‌های سپاه و حمایت از مردم ایران',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            },
-            {
-                id: 'iribnews',
-                name: 'شبکه خبر صدا و سیما (رصد)',
-                enName: 'IRIB News Network (Monitoring)',
-                category: 'مانیتورینگ تبلیغات حکومتی',
-                quality: '720p',
-                badgeText: 'رصد شبکه خبر',
-                gradient: 'from-slate-700 to-slate-900',
-                currentProgram: 'پخش جهت رصد و بررسی واکنش‌های رسمی حکومت به بحران‌ها و حملات جاری',
-                streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-            }
-        ];
+    function filterCategory(cat, btnEl) {
+      currentFilter = cat;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
+      if (btnEl) btnEl.classList.add('active-tab');
+      renderFeedGrid();
+    }
 
-        const telegramPosts = [
-            {
-                id: 201,
-                channelName: 'شاهزاده رضا پهلوی (کانال رسمی)',
-                channelHandle: '@rezapahlavi_officiall',
-                telegramUrl: 'https://t.me/s/rezapahlavi_officiall',
-                timeAgo: '۱۰ دقیقه پیش',
-                views: '۴۸۵K',
-                tag: 'پیام رسمی • بازپس‌گیری ایران',
-                title: 'پیام شاهزاده رضا پهلوی به مردم ایران و نیروهای نظامی: لحظه سرنوشت‌ساز بازپس‌گیری ایران فرا رسیده است',
-                summary: 'هم‌میهنانم، رژیم ضحاکی جمهوری اسلامی در ضعیف‌ترین و شکننده‌ترین نقطه تاریخ خود قرار دارد. همبستگی ملی، سازماندهی محلات و پیوستن بدنه نیروهای مسلح به ملت، کلید پیروزی نهایی انقلاب ملی شیر و خورشید و آزادی ایران است.',
-                color: 'amber'
-            },
-            {
-                id: 202,
-                channelName: 'ستاد ارتباطات شاهزاده رضا پهلوی',
-                channelHandle: '@rezapahlavicomms',
-                telegramUrl: 'https://t.me/s/rezapahlavicomms',
-                timeAgo: '۱۸ دقیقه پیش',
-                views: '۲۱۰K',
-                tag: 'سازماندهی و فراخوان ملی',
-                title: 'اطلاعیه راهبردی درباره هماهنگی شبکه‌های داخل کشور و کارزار بین‌المللی حمایت از انقلاب ملی ایران',
-                summary: 'گزارش کامل دیدارهای دیپلماتیک شاهزاده رضا پهلوی با رهبران و تصمیم‌گیران جهانی جهت پشتیبانی قاطع از مردم ایران در نبرد برای سرنگونی جمهوری اسلامی و استقرار دموکراسی سکولار در ایران آزاد.',
-                color: 'sky'
-            },
-            {
-                id: 203,
-                channelName: 'فرزاد زرین | Farzad Zarrin',
-                channelHandle: '@farzadzarrin',
-                telegramUrl: 'https://t.me/s/farzadzarrin',
-                timeAgo: '۲۵ دقیقه پیش',
-                views: '۱۳۴K',
-                tag: 'تحلیل سیاسی و اخبار جنگ',
-                title: 'تحلیل فوری فرزاد زرین: فروپاشی زنجیره فرماندهی سپاه و پیامدهای عملیات‌های اخیر علیه مواضع رژیم',
-                summary: 'بررسی دقیق وضعیت میدانی و بن‌بست کامل استراتژیک خامنه‌ای؛ چرا سیستم امنیتی و نظامی جمهوری اسلامی دیگر توان مهار همزمان ضربات خارجی و خیزش میلیونی مردم در شهرهای ایران را ندارد؟',
-                color: 'rose'
-            },
-            {
-                id: 204,
-                channelName: 'ایران اینترنشنال | خبر فوری',
-                channelHandle: '@IranIntlTV',
-                telegramUrl: 'https://t.me/s/IranIntlTV',
-                timeAgo: '۳۲ دقیقه پیش',
-                views: '۳۱۰K',
-                tag: 'اخبار جنگ و عملیات نظامی',
-                title: 'گزارش اختصاصی از هدف قرار گرفتن مراکز کلیدی موشکی و قرارگاه‌های سپاه پاسداران در چند استان',
-                summary: 'منابع آگاه از خسارات سنگین به زیرساخت‌های راداری، پدافندی و پایگاه‌های فرماندهی سپاه پاسداران خبر می‌دهند. جلسات اضطراری در شورای عالی امنیت رژیم برگزار شده است.',
-                color: 'red'
-            },
-            {
-                id: 205,
-                channelName: 'VOA Farsi | صدای آمریکا',
-                channelHandle: '@voafarsi',
-                telegramUrl: 'https://t.me/s/voafarsi',
-                timeAgo: '۴۵ دقیقه پیش',
-                views: '۱۶۵K',
-                tag: 'بین‌الملل و واشنگتن',
-                title: 'هشدار صریح کاخ سفید و کنگره آمریکا به سران جمهوری اسلامی؛ حمایت دوحزبی از مردم ایران برای آزادی',
-                summary: 'نمایندگان ارشد کنگره ایالات متحده با تاکید بر مشروعیت مبارزه مردم ایران برای سرنگونی حکومت اسلامی، خواستار تشدید فشارهای حداکثری و هدفمند علیه کلیه بازوهای سرکوب رژیم شدند.',
-                color: 'blue'
-            },
-            {
-                id: 206,
-                channelName: 'وحید آنلاین | Vahid Online',
-                channelHandle: '@VahidOnline',
-                telegramUrl: 'https://t.me/s/VahidOnline',
-                timeAgo: '۵۵ دقیقه پیش',
-                views: '۲۹۰K',
-                tag: 'ویدیوهای دریافتی مردم',
-                title: 'ویدیوهای ارسالی شهروندان از طنین‌انداز شدن شعارهای ملی و ضدحکومتی در تهران، کرج، شیراز و اصفهان',
-                summary: 'مجموعه ویدیوهای راستی‌آزمایی‌شده از نقاط مختلف کشور که نشان‌دهنده گسترش اعتراضات شبانه، دیوارنویسی‌های گسترده با نماد شیر و خورشید و آمادگی مردم برای خیزش سراسری است.',
-                color: 'emerald'
-            },
-            {
-                id: 207,
-                channelName: 'فرزاد زرین | Farzad Zarrin',
-                channelHandle: '@farzadzarrin',
-                telegramUrl: 'https://t.me/s/farzadzarrin',
-                timeAgo: '۱ ساعت پیش',
-                views: '۱۱۸K',
-                tag: 'برنامه ویژه یوتیوب و تلگرام',
-                title: 'پشت‌پرده وحشت سران رژیم از ائتلاف ملی به رهبری شاهزاده رضا پهلوی و ریزش در بدنه نیروها',
-                summary: 'گزارش اختصاصی در کانال تلگرام فرزاد زرین درباره پیام‌های ارسالی از درون نهادهای حکومتی و نظامی و آمادگی بخش بزرگی از جامعه برای مرحله نهایی بازپس‌گیری ایران.',
-                color: 'rose'
-            },
-            {
-                id: 208,
-                channelName: 'شاهزاده رضا پهلوی (کانال رسمی)',
-                channelHandle: '@rezapahlavi_officiall',
-                telegramUrl: 'https://t.me/s/rezapahlavi_officiall',
-                timeAgo: '۲ ساعت پیش',
-                views: '۵۴۰K',
-                tag: 'چشم‌انداز ایران آزاد',
-                title: 'اصول دوران گذار، حفظ تمامیت ارضی ایران و برنامه صد روز نخست پس از سقوط جمهوری اسلامی',
-                summary: 'تاکید بر حاکمیت ملی، جدایی دین از حکومت، برگزاری رفراندوم آزاد برای تعیین شکل نهایی نظام دموکراتیک و بازسازی سریع اقتصاد ایران با بازگشت سرمایه‌ها و متخصصان ایرانی.',
-                color: 'amber'
-            }
-        ];
+    // ==========================================
+    // 4. MODAL PLAYER & NEWS VIEWER
+    // ==========================================
+    function openFullscreenCurrentTV() {
+      const ch = tvChannels[activeChannelIndex];
+      const modal = document.getElementById('app-modal');
+      const playerBox = document.getElementById('modal-player-box');
+      const newsBox = document.getElementById('modal-news-box');
 
-        const youtubeVideos = [
-            {
-                id: 'yt_rp1',
-                title: 'سخنرانی و پیام ویژه شاهزاده رضا پهلوی خطاب به ملت ایران درباره مرحله نهایی بازپس‌گیری ایران',
-                channel: 'Reza Pahlavi شاهزاده رضا پهلوی',
-                handle: '@OfficialRezaPahlavi',
-                category: 'رهبری انقلاب ملی',
-                duration: '28:40',
-                views: '۶۸۰ هزار بازدید',
-                published: '۱ ساعت پیش',
-                badgeColor: 'bg-amber-600',
-                thumbGradient: 'from-amber-900 via-slate-900 to-slate-950',
-                description: 'بیانیه و نقشه راه شاهزاده رضا پهلوی برای هماهنگی نیروهای داخل و خارج از کشور، گذار از جمهوری اسلامی و بازگرداندن عظمت و آزادی به ایران.'
-            },
-            {
-                id: 'yt_arash1',
-                title: 'تحلیل ویژه آرش اعلایی: معادلات نظامی جنگ با جمهوری اسلامی و سناریوهای فروپاشی دستگاه سرکوب',
-                channel: 'Arash Alaee آرش اعلایی',
-                handle: '@ArashAlaee',
-                category: 'تحلیل استراتژیک و نظامی',
-                duration: '42:15',
-                views: '۲۴۵ هزار بازدید',
-                published: '۲ ساعت پیش',
-                badgeColor: 'bg-indigo-600',
-                thumbGradient: 'from-indigo-950 via-slate-900 to-slate-950',
-                description: 'بررسی موشکافانه آرش اعلایی از وضعیت فعلی جنگ، ضربات واردشده به سپاه پاسداران و چگونگی تغییر موازنه قوا به سود انقلاب ملی مردم ایران.'
-            },
-            {
-                id: 'yt_farzad1',
-                title: 'برنامه زنده فرزاد زرین: آخرین اخبار جنگ علیه جمهوری اسلامی، خیزش مردم و بازپس‌گیری ایران',
-                channel: 'Farzad Zarrin فرزاد زرین',
-                handle: '@FarzadZarrin',
-                category: 'تحلیل سیاسی و اتاق خبر',
-                duration: '54:20',
-                views: '۳۱۰ هزار بازدید',
-                published: '۲ ساعت پیش',
-                badgeColor: 'bg-rose-600',
-                thumbGradient: 'from-rose-950 via-red-950 to-slate-950',
-                description: 'پوشش زنده و تحلیلی فرزاد زرین از رویدادهای ساعات گذشته، واکنش مردم در شهرهای مختلف و گام‌های عملی برای پیروزی انقلاب شیر و خورشید.'
-            },
-            {
-                id: 'yt_arash2',
-                title: 'آرش اعلایی: چرا جمهوری اسلامی در تله راهبردی گرفتار شده و راه فراری از سرنگونی ندارد؟',
-                channel: 'Arash Alaee آرش اعلایی',
-                handle: '@ArashAlaee',
-                category: 'تحلیل استراتژیک',
-                duration: '36:50',
-                views: '۱۹۸ هزار بازدید',
-                published: '۴ ساعت پیش',
-                badgeColor: 'bg-indigo-600',
-                thumbGradient: 'from-blue-950 via-slate-900 to-slate-950',
-                description: 'کالبدشکافی بحران‌های اقتصادی، نظامی و مشروعیتی حکومت اسلامی و نقش محوری آلترناتیو ملی در هدایت دوران گذار.'
-            },
-            {
-                id: 'yt_farzad2',
-                title: 'فرزاد زرین: بررسی پیام جدید شاهزاده رضا پهلوی و وحشت رسانه‌های حکومتی از موج جدید خیزش ملی',
-                channel: 'Farzad Zarrin فرزاد زرین',
-                handle: '@FarzadZarrin',
-                category: 'تحلیل سیاسی',
-                duration: '47:10',
-                views: '۲۷۰ هزار بازدید',
-                published: '۵ ساعت پیش',
-                badgeColor: 'bg-rose-600',
-                thumbGradient: 'from-red-900 via-slate-900 to-slate-950',
-                description: 'نگاهی به بازتاب گسترده فراخوان‌های ملی در داخل ایران و تحلیل ریزش شدید در نیروهای انتظامی و ارتش.'
-            },
-            {
-                id: 'yt_iranintl1',
-                title: 'میزگرد ویژه ایران اینترنشنال: بررسی ابعاد نظامی حملات اخیر به پایگاه‌های سپاه و آینده سیاسی ایران',
-                channel: 'Iran International ایران اینترنشنال',
-                handle: '@IranIntl',
-                category: 'گزارش ویژه خبری',
-                duration: '31:18',
-                views: '۴۱۰ هزار بازدید',
-                published: '۳ ساعت پیش',
-                badgeColor: 'bg-red-600',
-                thumbGradient: 'from-red-950 via-slate-900 to-slate-950',
-                description: 'گفتگو با کارشناسان نظامی و سیاسی بین‌المللی درباره پیامدهای عملیات‌های جاری علیه ساختار نظامی جمهوری اسلامی.'
-            },
-            {
-                id: 'yt_voa1',
-                title: 'صفحه آخر صدای آمریکا: پرونده ویژه فساد و بحران در راس هرم قدرت جمهوری اسلامی در میانه جنگ',
-                channel: 'VOA Farsi صدای آمریکا',
-                handle: '@VOAFarsi',
-                category: 'برنامه تحلیلی',
-                duration: '49:00',
-                views: '۱۸۵ هزار بازدید',
-                published: '۶ ساعت پیش',
-                badgeColor: 'bg-sky-600',
-                thumbGradient: 'from-sky-950 via-slate-900 to-slate-950',
-                description: 'گزارش مستند از انتقال دارایی‌های وابستگان رژیم و آمادگی مردم ایران برای دوران پس از جمهوری اسلامی.'
-            },
-            {
-                id: 'yt_national1',
-                title: 'مستند ویژه: انقلاب ملی شیر و خورشید؛ از خیزش دی و آبان تا نبرد نهایی برای آزادی ایران',
-                channel: 'رسانه انقلاب ملی شیر و خورشید',
-                handle: '@LionAndSunTV',
-                category: 'مستند و تاریخ معاصر',
-                duration: '39:12',
-                views: '۳۵۰ هزار بازدید',
-                published: '۷ ساعت پیش',
-                badgeColor: 'bg-amber-500',
-                thumbGradient: 'from-amber-950 via-yellow-950 to-slate-950',
-                description: 'مروری بر روند شکل‌گیری همبستگی ملی حول پرچم شیر و خورشید و رهبری شاهزاده رضا پهلوی برای بازپس‌گیری ایران.'
-            }
-        ];
+      document.getElementById('modal-title').textContent = `📺 ${ch.name}`;
+      document.getElementById('modal-subtitle').textContent = ch.desc;
 
-        let currentLiveChannelIndex = 0;
-        let currentTelegramFilter = 'ALL';
-        let currentYoutubeFilter = 'ALL';
-        let hlsInstance = null;
+      newsBox.style.display = 'none';
+      playerBox.style.display = 'flex';
 
-        // =========================================================================
-        // 2. RENDER FUNCTIONS
-        // =========================================================================
-        function renderAll() {
-            renderHomeDashboard();
-            renderLiveTvSection();
-            renderTelegramSection();
-            renderYoutubeSection();
-            renderSourcesLists();
-            renderBreakingTicker();
+      if (ch.ytEmbed) {
+        playerBox.innerHTML = `
+          <iframe src="${ch.ytEmbed}" style="width:100%; height:100%; border:none;" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+        `;
+      } else {
+        playerBox.innerHTML = `
+          <div style="text-align:center; padding: 30px;">
+            <div style="font-size: 64px; margin-bottom: 14px;">${ch.icon}</div>
+            <div style="font-size: 24px; font-weight:900; color:#fff; margin-bottom:10px;">${ch.name}</div>
+            <div style="font-size: 16px; color:#cbd5e1; margin-bottom:20px;">${ch.desc}</div>
+            <video src="${ch.streamUrl}" controls autoplay style="width: 80%; max-height: 360px; border-radius: 14px; border: 2px solid #f59e0b; background:#000;"></video>
+          </div>
+        `;
+      }
+
+      modal.classList.add('open');
+      setFocus(document.getElementById('modal-close-btn'));
+    }
+
+    function openNewsModal(idx) {
+      const item = feedItems[idx] || feedItems[0];
+      const modal = document.getElementById('app-modal');
+      const playerBox = document.getElementById('modal-player-box');
+      const newsBox = document.getElementById('modal-news-box');
+
+      document.getElementById('modal-title').textContent = `${item.icon} ${item.source}`;
+      document.getElementById('modal-subtitle').textContent = `${item.handle} • ${item.time}`;
+
+      playerBox.style.display = 'none';
+      playerBox.innerHTML = '';
+      newsBox.style.display = 'block';
+
+      newsBox.innerHTML = `
+        <div style="font-size: 24px; font-weight: 900; color: #fbbf24; margin-bottom: 18px; line-height: 1.5;">
+          ${item.title}
+        </div>
+        <div style="white-space: pre-line; font-size: 19px; color: #f8fafc; line-height: 2;">
+          ${item.body}
+        </div>
+      `;
+
+      modal.classList.add('open');
+      setFocus(document.getElementById('modal-close-btn'));
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('app-modal');
+      const playerBox = document.getElementById('modal-player-box');
+      playerBox.innerHTML = '';
+      modal.classList.remove('open');
+      const firstNav = document.querySelector('.nav-btn');
+      if (firstNav) setFocus(firstNav);
+    }
+
+    // ==========================================
+    // 5. NON-BLOCKING LIVE TELEGRAM SYNC
+    // ==========================================
+    window.onNativeTelegramData = function(channelHandle, htmlContent) {
+      if (!htmlContent || htmlContent.length < 100) return;
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        const nodes = doc.querySelectorAll('.tgme_widget_message_text');
+        if (nodes && nodes.length > 0) {
+          const latestNode = nodes[nodes.length - 1];
+          const text = latestNode.textContent.trim();
+          if (text.length > 20) {
+            feedItems.unshift({
+              type: 'telegram',
+              source: `بروزرسانی زنده (${channelHandle})`,
+              handle: `t.me/${channelHandle}`,
+              icon: '⚡',
+              gradient: 'linear-gradient(135deg, #059669 0%, #0f172a 100%)',
+              time: 'هم‌اکنون (زنده)',
+              title: text.substring(0, 110) + '...',
+              body: text
+            });
+            renderFeedGrid();
+          }
         }
+      } catch (e) {}
+    };
 
-        function renderHomeDashboard() {
-            // Quick channels grid in Home (show 6 channels)
-            const quickContainer = document.getElementById('home-quick-channels');
-            quickContainer.innerHTML = liveChannels.slice(0, 6).map((ch, idx) => `
-                <button onclick="openLivePlayer(${idx})" tabindex="0" class="tv-focusable bg-slate-950/90 hover:bg-slate-800 border border-slate-800/90 rounded-2xl p-2.5 flex items-center gap-3 text-right transition">
-                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${ch.gradient} flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow text-center leading-tight px-1">
-                        ${ch.badgeText}
-                    </div>
-                    <div class="overflow-hidden">
-                        <div class="text-xs font-extrabold text-white truncate">${ch.name}</div>
-                        <div class="text-[10px] text-emerald-400 flex items-center gap-1 mt-0.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span> پخش زنده
-                        </div>
-                    </div>
-                </button>
-            `).join('');
+    function syncLiveTelegram() {
+      const btn = document.getElementById('sync-btn');
+      btn.innerHTML = '<span>⏳</span> در حال دریافت...';
+      const channels = ['rezapahlavi_officiall', 'rezapahlavicomms', 'farzadzarrin'];
 
-            // Top 4 Telegram cards in Home
-            const homeTg = document.getElementById('home-telegram-grid');
-            homeTg.innerHTML = telegramPosts.slice(0, 4).map(post => createTelegramCardHTML(post)).join('');
-
-            // Top 4 YouTube cards in Home
-            const homeYt = document.getElementById('home-youtube-grid');
-            homeYt.innerHTML = youtubeVideos.slice(0, 4).map(vid => createYoutubeCardHTML(vid)).join('');
-
-            // Update sidebar counts
-            document.getElementById('live-count-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span> ${liveChannels.length.toLocaleString('fa-IR')} زنده`;
-            document.getElementById('tg-count-badge').textContent = telegramPosts.length.toLocaleString('fa-IR');
-            document.getElementById('yt-count-badge').textContent = youtubeVideos.length.toLocaleString('fa-IR');
+      channels.forEach(ch => {
+        const targetUrl = 'https://t.me/s/' + ch;
+        if (window.AndroidBridge && window.AndroidBridge.fetchTelegramAsync) {
+          window.AndroidBridge.fetchTelegramAsync(ch, targetUrl);
+        } else {
+          fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl))
+            .then(r => r.json())
+            .then(d => {
+              if (d && d.contents) window.onNativeTelegramData(ch, d.contents);
+            })
+            .catch(() => {});
         }
-<!-- ... existing code ... -->
-        function openTelegramModal(postId) {
-            const post = telegramPosts.find(p => p.id === postId);
-            if (!post) return;
+      });
 
-            document.getElementById('modal-source-badge').textContent = `کانال تلگرام: ${post.channelName}`;
-            document.getElementById('modal-time-badge').textContent = `${post.timeAgo} • ${post.views} بازدید`;
-            document.getElementById('modal-body-content').innerHTML = `
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between bg-slate-950 px-4 py-2.5 rounded-xl border border-slate-800">
-                        <span class="text-xs text-sky-400 font-mono" dir="ltr">https://t.me/${post.channelHandle.replace('@', '')}</span>
-                        <span class="text-xs bg-amber-500/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold">${post.tag}</span>
-                    </div>
-                    <h2 class="text-xl font-black text-white leading-relaxed">${post.title}</h2>
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 text-sm text-slate-200 leading-8">
-                        ${post.summary}
-                        <br><br>
-                        <span class="text-xs text-slate-400">منبع: دریافت خودکار از نسخه وب کانال عمومی تلگرام (${post.channelHandle}) در اپلیکیشن تلویزیون هوشمند اندروید.</span>
-                    </div>
-                </div>
-            `;
-            const modal = document.getElementById('content-detail-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+      setTimeout(() => {
+        btn.innerHTML = '<span>✅</span> بروزرسانی شد';
+        setTimeout(() => { btn.innerHTML = '<span>🔄</span> دریافت زنده'; }, 2500);
+      }, 1800);
+    }
+
+    // ==========================================
+    // 6. SMART SPATIAL D-PAD REMOTE CONTROLLER
+    // ==========================================
+    function getFocusableElements() {
+      const modal = document.getElementById('app-modal');
+      if (modal.classList.contains('open')) {
+        return Array.from(modal.querySelectorAll('.tv-focusable'));
+      }
+      return Array.from(document.querySelectorAll('.tv-focusable')).filter(el => {
+        return el.offsetParent !== null;
+      });
+    }
+
+    function setFocus(el) {
+      if (!el) return;
+      document.querySelectorAll('.tv-focused').forEach(n => n.classList.remove('tv-focused'));
+      focusedElement = el;
+      el.classList.add('tv-focused');
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function moveFocus(direction) {
+      const list = getFocusableElements();
+      if (!list.length) return;
+      if (!focusedElement || !list.includes(focusedElement)) {
+        setFocus(list[0]);
+        return;
+      }
+
+      const curRect = focusedElement.getBoundingClientRect();
+      const curX = curRect.left + curRect.width / 2;
+      const curY = curRect.top + curRect.height / 2;
+
+      let bestCandidate = null;
+      let bestScore = Infinity;
+
+      list.forEach(candidate => {
+        if (candidate === focusedElement) return;
+        const r = candidate.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+
+        const dx = cx - curX;
+        const dy = cy - curY;
+
+        let valid = false;
+        if (direction === 'left' && dx < -15) valid = true;
+        if (direction === 'right' && dx > 15) valid = true;
+        if (direction === 'up' && dy < -15) valid = true;
+        if (direction === 'down' && dy > 15) valid = true;
+
+        if (valid) {
+          const primaryDist = (direction === 'left' || direction === 'right') ? Math.abs(dx) : Math.abs(dy);
+          const orthoDist = (direction === 'left' || direction === 'right') ? Math.abs(dy) : Math.abs(dx);
+          const score = primaryDist + orthoDist * 2.6;
+          if (score < bestScore) {
+            bestScore = score;
+            bestCandidate = candidate;
+          }
         }
+      });
 
-        function openYoutubeModal(vidId) {
-            const vid = youtubeVideos.find(v => v.id === vidId);
-            if (!vid) return;
+      if (bestCandidate) {
+        setFocus(bestCandidate);
+      }
+    }
 
-            document.getElementById('modal-source-badge').textContent = `یوتیوب: ${vid.channel}`;
-            document.getElementById('modal-time-badge').textContent = `${vid.published} • ${vid.views}`;
-            document.getElementById('modal-body-content').innerHTML = `
-                <div class="space-y-4">
-                    <div class="aspect-video bg-gradient-to-br ${vid.thumbGradient} rounded-2xl border border-slate-700 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-                        <div class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-3 shadow-xl">
-                            <i class="fa-solid fa-play"></i>
-                        </div>
-                        <span class="text-xs bg-black/50 text-amber-300 px-3 py-1 rounded-full mb-2 border border-amber-400/30">${vid.channel} (${vid.handle})</span>
-                        <h3 class="text-lg font-black text-white max-w-xl leading-relaxed">${vid.title}</h3>
-                        <p class="text-xs text-slate-300 mt-3 max-w-lg leading-relaxed">${vid.description || ''}</p>
-                    </div>
-                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between text-xs text-slate-400">
-                        <span>پخش‌کننده داخلی YouTube Leanback Player ویژه تلویزیون‌های اندروید</span>
-                        <span class="text-emerald-400 font-bold">کیفیت 1080p HD</span>
-                    </div>
-                </div>
-            `;
-            const modal = document.getElementById('content-detail-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+    window.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('app-modal');
+      if (e.key === 'Escape' || e.key === 'Backspace') {
+        if (modal.classList.contains('open')) {
+          e.preventDefault();
+          closeModal();
         }
-<!-- ... existing code ... -->
-        function syncAllFeeds() {
-            fetchLiveTelegramWebFeeds();
-        }
+        return;
+      }
 
-        // Live fetch simulation + CORS-friendly public Telegram channel reader
-        async function fetchLiveTelegramWebFeeds() {
-            const icon = document.getElementById('sync-icon');
-            const statusEl = document.getElementById('feed-status-indicator');
-            icon.classList.add('fa-spin');
-            if (statusEl) {
-                statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 live-dot"></span> در حال دریافت از تلگرام...`;
-            }
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+        e.preventDefault();
+        if (e.key === 'ArrowLeft') moveFocus('left');
+        else if (e.key === 'ArrowRight') moveFocus('right');
+        else if (e.key === 'ArrowUp') moveFocus('up');
+        else if (e.key === 'ArrowDown') moveFocus('down');
+        else if (e.key === 'Enter' && focusedElement) focusedElement.click();
+      }
+    });
 
-            try {
-                // Attempt live fetch via Jina Reader / CORS proxy for public Telegram channels if online
-                const targetChannels = [
-                    { handle: 'rezapahlavi_officiall', name: 'شاهزاده رضا پهلوی (کانال رسمی)', tag: 'پیام رسمی • واکشی زنده' },
-                    { handle: 'rezapahlavicomms', name: 'ستاد ارتباطات شاهزاده رضا پهلوی', tag: 'ستاد ارتباطات • واکشی زنده' },
-                    { handle: 'farzadzarrin', name: 'فرزاد زرین | Farzad Zarrin', tag: 'تحلیل سیاسی و جنگ • واکشی زنده' }
-                ];
-
-                for (const ch of targetChannels) {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3500);
-                    const resp = await fetch(`https://r.jina.ai/https://t.me/s/${ch.handle}`, { signal: controller.signal }).catch(() => null);
-                    clearTimeout(timeoutId);
-
-                    if (resp && resp.ok) {
-                        const text = await resp.text();
-                        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 45 && !l.startsWith('http') && !l.includes('Telegram'));
-                        if (lines.length > 0) {
-                            const latestLine = lines[lines.length - 1].slice(0, 220);
-                            const existingIdx = telegramPosts.findIndex(p => p.channelHandle === '@' + ch.handle);
-                            if (existingIdx !== -1) {
-                                telegramPosts[existingIdx].timeAgo = 'بروزرسانی زنده (هم‌اکنون)';
-                            } else {
-                                telegramPosts.unshift({
-                                    id: Date.now() + Math.random(),
-                                    channelName: ch.name,
-                                    channelHandle: '@' + ch.handle,
-                                    timeAgo: 'هم‌اکنون (زنده)',
-                                    views: 'جدید',
-                                    tag: ch.tag,
-                                    title: latestLine.slice(0, 95) + '...',
-                                    summary: latestLine,
-                                    color: 'sky'
-                                });
-                            }
-                        }
-                    }
-                }
-            } catch (_) {
-                // Fallback gracefully to preloaded realistic feeds
-            } finally {
-                setTimeout(() => {
-                    icon.classList.remove('fa-spin');
-                    if (statusEl) {
-                        statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> بروزرسانی شد`;
-                    }
-                    renderAll();
-                }, 600);
-            }
-        }
-
-        // =========================================================================
-        // 5. ANDROID TV D-PAD / KEYBOARD NAVIGATION & TRIPLE CALENDAR CLOCK
-        // =========================================================================
-        function simulateDpad(key) {
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: key }));
-        }
-<!-- ... existing code ... -->
-        function toPersianDigits(str) {
-            return String(str).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('live-clock').textContent = timeStr;
-            const simClock = document.getElementById('sim-overlay-clock');
-            if (simClock) simClock.textContent = now.toLocaleTimeString('en-US', { hour12: false }) + ' LIVE';
-
-            try {
-                // 1. Solar Hijri (خورشیدی) + Imperial (شاهنشاهی = Solar Hijri + 1180)
-                const parts = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }).formatToParts(now);
-
-                let day = '', month = '', yearStr = '', weekday = '';
-                parts.forEach(p => {
-                    if (p.type === 'day') day = p.value;
-                    if (p.type === 'month') month = p.value;
-                    if (p.type === 'year') yearStr = p.value;
-                    if (p.type === 'weekday') weekday = p.value;
-                });
-
-                // Convert Persian digits in yearStr to English number to add 1180 for Shahanshahi Calendar
-                const englishYear = parseInt(yearStr.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)), 10);
-                const imperialYear = !isNaN(englishYear) ? toPersianDigits(englishYear + 1180) : '۲۵۸۵';
-
-                document.getElementById('persian-date').textContent = `${weekday} ${day} ${month} ${yearStr}`;
-                document.getElementById('imperial-date').textContent = `${day} ${month} ${imperialYear} شاهنشاهی`;
-
-                // 2. Gregorian Calendar (میلادی)
-                const gregStr = new Intl.DateTimeFormat('en-US', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                }).format(now);
-                document.getElementById('gregorian-date').textContent = gregStr;
-            } catch (_) {}
-        }
-
-        window.onload = function () {
-            renderAll();
-            updateClock();
-            setInterval(updateClock, 1000);
-        };
-    </script>
+    // INITIALIZE APP IMMEDIATELY (ZERO EXTERNAL DEPENDENCIES)
+    window.onload = function() {
+      updateClocksAndCalendars();
+      setInterval(updateClocksAndCalendars, 1000);
+      renderTVChannelList();
+      renderFeedGrid();
+      const first = document.querySelector('.nav-btn');
+      if (first) setFocus(first);
+    };
+  </script>
 </body>
 </html>
